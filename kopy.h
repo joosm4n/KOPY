@@ -23,7 +23,7 @@ extern "C" KOPY_API bool DrawLine(const float pt1_x, const float pt1_y, const fl
 extern "C" KOPY_API bool RenderFrame();
 
 // Create TEXTURE?
-extern "C" KOPY_API bool LoadTexture(char* file_path);
+extern "C" KOPY_API int LoadTexture(char file_path[], int len);
 
 // ButtonPressed?
 enum KEYBOARD_BUTTON {
@@ -34,3 +34,5 @@ enum KEYBOARD_BUTTON {
 // Checks if a button was pressed
 extern "C" KOPY_API bool ButtonPressed(KEYBOARD_BUTTON a);
 
+// Testing passing a string
+extern "C" KOPY_API bool ImportString(char* buffer, int len);

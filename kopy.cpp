@@ -6,49 +6,13 @@
 #include "kopy.h"
 #include <SDL3/SDL.h>
 
-// DLL internal state variables:
-static unsigned long long sum_;  // Previous value, if any
-static bool initalized_ = false;
-
-// SDL STUFF
+// Internal DLL vars
 static bool SDLInitalized = false;
 static SDL_Window* _window = nullptr;
 static SDL_Renderer* _renderer = nullptr;
 static const SDL_Color SCREEN_CLR = { 0, 0, 0, 255 };
 static const SDL_Color NULL_CLR = { 255, 105, 180, 255 };
 
-// Starts the sum
-void add_init(const unsigned long long start_value)
-{
-    sum_ = start_value;
-    initalized_ = true;
-}
-
-// Adds number to sum
-bool add_num(const unsigned long long num_in)
-{
-    if (!initalized_) {
-        return false;
-    }
-    else {
-
-        // check to see if we'd overflow result or position
-        if (ULLONG_MAX - sum_ < num_in) {
-            return false;
-        }
-        sum_ += num_in;
-        return true;
-    }
-}
-
-// Gets current sum
-unsigned long long get_sum()
-{
-    if (initalized_)
-        return sum_;
-    else
-        return 0;
-}
 
 bool OpenKOPYWindow()
 {

@@ -3,6 +3,7 @@
 #include "macros.h"
 #include <vector>
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 #include <iostream>
 #include <string>
 
@@ -50,7 +51,7 @@ namespace KOPY {
 				return -1;
 			}
 
-			SDL_Surface* _surface = SDL_LoadBMP(file_path.data());
+			SDL_Surface* _surface = IMG_Load(file_path.data());
 			//SDL_Surface* _surface = SDL_LoadBMP("assets/test_bmp.bmp");
 			if (!_surface) {
 				LOG2("SDL_LoadBMP error : ", SDL_GetError());
@@ -84,7 +85,7 @@ namespace KOPY {
 			return true;
 		}
 
-		bool PlaceTexture(int index, float pointx, float pointy)
+		bool MoveTexture(int index, float pointx, float pointy)
 		{
 			if (index > m_Textures.size() - 1) {
 				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);

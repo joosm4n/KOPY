@@ -11,6 +11,8 @@
 // Initalizes all KOPY stuff
 extern "C" KOPY_API bool InitKOPY();
 
+extern "C" KOPY_API bool SetScriptPath(char* path);
+
 // Initalizes SDL and Creates SDL_Window and SDL_Renderer
 extern "C" KOPY_API bool OpenKOPYWindow(int width, int height);
 
@@ -20,17 +22,19 @@ extern "C" KOPY_API bool CloseKOPYWindow();
 // Sets the SDL_Renderer draw color
 extern "C" KOPY_API bool SetDrawColor(const int r, const int g, const int b, const int a);
 
+//
+extern "C" KOPY_API bool SetScreenColor(const int r, const int g, const int b, const int a);
+
 // Draws a line from pt1 to pt2 with current color
 extern "C" KOPY_API bool DrawLine(const float pt1_x, const float pt1_y, const float pt2_x, const float pt2_y);
 
 // SDL_RenderPresent
 extern "C" KOPY_API bool RenderFrame();
 
-// Create TEXTURE?
-extern "C" KOPY_API int LoadTexture(char* file_path);
-
-// Placem texture
+// Textures	
+extern "C" KOPY_API int LoadTexture(char* file_name);
 extern "C" KOPY_API bool PlaceTexture(int index, int pointx, int pointy, int width, int height);
+extern "C" KOPY_API bool MoveTexture(int index, int pointx, int pointy);
 
 // ButtonPressed?
 enum KEYBOARD_BUTTON {

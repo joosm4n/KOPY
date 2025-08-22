@@ -15,13 +15,13 @@ static bool KOPYInitalized = false;
 static bool SDLInitalized = false;
 static SDL_Window* _window = nullptr;
 static SDL_Renderer* _renderer = nullptr;
-static const SDL_Color SCREEN_CLR = { 0, 0, 0, 255 };
+static SDL_Color SCREEN_CLR = { 0, 0, 0, 255 };
 static const SDL_Color NULL_CLR = { 255, 105, 180, 255 };
 
 // File path stuff
 static KOPY::TextureHandler tHandler;
 static std::string SCRIPT_PATH;
-static const std::string ASSETS_PATH = "bin/assets/";
+static const std::string ASSETS_PATH = "/bin/assets/";
 
 bool InitKOPY()
 {
@@ -39,7 +39,8 @@ bool InitKOPY()
 
 bool SetScriptPath(char* path)
 {
-    std::string _str;
+    SCRIPT_PATH = path;
+    return true;
 }
 
 bool OpenKOPYWindow(int width, int height)
@@ -95,7 +96,19 @@ bool CloseKOPYWindow()
 }
 
 bool SetDrawColor(const int r, const int g, const int b, const int a) {
-    return SDL_SetRenderDrawColor(_renderer, SDL_clamp(r, 0, 255), SDL_clamp(g, 0, 255), SDL_clamp(b, 0, 255), SDL_clamp(a, 0, 255));
+    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
+    return SDL_SetRenderDrawColor(_renderer, SDL_clamp(r, 0, 255),
+                                                SDL_clamp(g, 0, 255),
+                                                SDL_clamp(b, 0, 255),
+                                                SDL_clamp(a, 0, 255));
+}
+
+bool SetScreenColor(const int r, const int g, const int b, const int a) {
+    SCREEN_CLR.r = SDL_clamp(r, 0, 255);
+    SCREEN_CLR.g = SDL_clamp(g, 0, 255);
+    SCREEN_CLR.b = SDL_clamp(b, 0, 255);
+    SCREEN_CLR.a = SDL_clamp(a, 0, 255);
+    return true;
 }
 
 bool DrawLine(const float pt1_x, const float pt1_y, const float pt2_x, const float pt2_y) {
@@ -104,12 +117,14 @@ bool DrawLine(const float pt1_x, const float pt1_y, const float pt2_x, const flo
 
 bool RenderFrame() {
     ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
+    SDL_SetRenderDrawColor(_renderer, SCREEN_CLR.r, SCREEN_CLR.g, SCREEN_CLR.b, SCREEN_CLR.a);
+    SDL_RenderClear(_renderer);
     tHandler.RenderAll();
     return SDL_RenderPresent(_renderer);
 }
 
-int LoadTexture(char* file_path_in) {
-    const std::string path_str = ASSETS_PATH + file_path_in;
+int LoadTexture(char* file_name) {
+    const std::string path_str = SCRIPT_PATH + ASSETS_PATH + file_name;
     LOG2("FilePath : ", path_str);
     return tHandler.LoadTexture(path_str);
 }
@@ -119,8 +134,14 @@ bool PlaceTexture(int index, int pointx, int pointy, int width, int height)
     LOG2("Placing Texture : ", index);
     bool goodRet;
     goodRet = tHandler.ResizeTexture(index, (float) width, (float) height);
-    goodRet &= tHandler.PlaceTexture(index, (float) pointx, (float) pointy);
+    goodRet &= tHandler.MoveTexture(index, (float) pointx, (float) pointy);
     return goodRet;
+}
+
+bool MoveTexture(int index, int pointx, int pointy)
+{
+    ERR_HANDLE(!SDLInitalized, "SDL not initalized", return false);
+    return tHandler.MoveTexture(index, (float)pointx, (float)pointy);
 }
 
 bool ImportString(char* contents)

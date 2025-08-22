@@ -5,6 +5,7 @@
 #include <SDL3/SDL.h>
 #include <iostream>
 #include <string>
+#include "transform.h"
 
 namespace KOPY {
 
@@ -12,7 +13,7 @@ namespace KOPY {
 	{
 	private:
 		std::vector<SDL_Texture*> m_Textures;
-		std::vector<SDL_FRect> m_FRects;
+		std::vector<Transform> m_Transforms;
 		SDL_Renderer* m_Renderer;
 
 	public:
@@ -64,9 +65,8 @@ namespace KOPY {
 			}
 			m_Textures.emplace_back(_texture);
 			SDL_DestroySurface(_surface);
-
-			SDL_FRect frect = { 0, 0, 0, 0 };
-			m_FRects.emplace_back(frect);
+			SDL_FRect frect = { 0, 0, _texture->w, _texture->h };
+			m_Transforms.emplace_back(Transform(frect));
 
 			LOG2("Texture Loaded from ", file_path);
 			return (int)(m_Textures.size()) - 1;
@@ -78,9 +78,7 @@ namespace KOPY {
 				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
 				return false;
 			}
-
-			m_FRects.at(index).w = width;
-			m_FRects.at(index).h = height;
+			m_Transforms.at(index).SetSize(width, height);
 			return true;
 		}
 
@@ -91,17 +89,27 @@ namespace KOPY {
 				return false;
 			}
 
-			m_FRects.at(index).x = pointx;
-			m_FRects.at(index).y = pointy;
-			LOG2("x : ", m_FRects.at(index).x);
-			LOG2("y : ", m_FRects.at(index).y);
+			m_Transforms.at(index).SetPos(pointx, pointy);
 			return true;
+		}
+
+		bool RotateTexture(int index, float degrees)
+		{
+			if (index > m_Textures.size() - 1) {
+				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
+				return false;
+			}
+
+			m_Transforms.at(index).Rotation += degrees;
 		}
 
 		void RenderAll()
 		{
 			for (int i = 0; i < m_Textures.size(); i++) {
-				SDL_RenderTexture(m_Renderer, m_Textures.at(i), NULL, &m_FRects.at(i));
+				SDL_RenderTextureRotated(m_Renderer, m_Textures.at(i), NULL,
+											&m_Transforms.at(i).FRect,
+											m_Transforms.at(i).Rotation,
+											NULL, SDL_FLIP_NONE);
 			}
 		}
 	};

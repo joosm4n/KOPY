@@ -144,6 +144,12 @@ bool MoveTexture(int index, int pointx, int pointy)
     return tHandler.MoveTexture(index, (float)pointx, (float)pointy);
 }
 
+bool RotateTexture(int index, int degrees)
+{
+    ERR_HANDLE(!SDLInitalized, "SDL not initalized", return false);
+    return tHandler.RotateTexture(index, degrees);
+}
+
 bool ImportString(char* contents)
 {
     const std::string str_in = contents;

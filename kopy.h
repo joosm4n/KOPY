@@ -35,6 +35,7 @@ extern "C" KOPY_API bool RenderFrame();
 extern "C" KOPY_API int LoadTexture(char* file_name);
 extern "C" KOPY_API bool PlaceTexture(int index, int pointx, int pointy, int width, int height);
 extern "C" KOPY_API bool MoveTexture(int index, int pointx, int pointy);
+extern "C" KOPY_API bool RotateTexture(int index, int degrees);
 
 // ButtonPressed?
 enum KEYBOARD_BUTTON {

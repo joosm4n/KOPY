@@ -24,7 +24,7 @@ static char* _str;
 
 // File path stuff
 static KOPY::TextureHandler tHandler;
-static const std::string ASSETS_PATH = "assets/";
+static const std::string ASSETS_PATH = "C:/Users/Pengu/Documents/IdiotEngineers/KOPY/bin/assets/";
 
 bool OpenKOPYWindow()
 {
@@ -84,28 +84,29 @@ bool DrawLine(const float pt1_x, const float pt1_y, const float pt2_x, const flo
 }
 
 bool RenderFrame() {
+    tHandler.RenderAll();
     return SDL_RenderPresent(_renderer);
 }
 
-int LoadTexture(char file_path_in[], int len) {
-    std::string path_str = ASSETS_PATH;
-    for (int i = 0; i <= len; i++) {
-        path_str += file_path_in[i];
-    }
-
+int LoadTexture(char* file_path_in) {
+    const std::string path_str = ASSETS_PATH + file_path_in;
     LOG2("FilePath : ", path_str);
     return tHandler.LoadTexture(path_str);
 }
 
-bool ImportString(char* contents, int len)
-{
-    std::string _str = "";
-    for (size_t i = 0; i < 2 * len; i++) {
-        _str += contents[i];
-    }
-    LOG2(_str, 2);
+bool PlaceTexture(int index, int pointx, int pointy, int width, int height) {
+    LOG2("Placing Texture :     ", index);
+    bool goodRet;
+    goodRet = tHandler.ResizeTexture(index, width, height);
+    goodRet &= tHandler.PlaceTexture(index, pointx, pointy);
+    return goodRet;
+}
 
-    if (strcmp(_str.c_str(), "HelloWorld"))
+bool ImportString(char* contents)
+{
+    const std::string str_in = contents;
+    LOG2("Imported String : ", contents);
+    if (strcmp(str_in.c_str(), contents))
         return true;    
     else
         return false;
@@ -138,4 +139,9 @@ bool ButtonPressed(KEYBOARD_BUTTON key)
         }
     }
     return false;
+}
+
+bool WaitForKeypress(KEYBOARD_BUTTON key)
+{
+
 }

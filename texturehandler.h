@@ -14,6 +14,7 @@ namespace KOPY {
 	{
 	private:
 		std::vector<SDL_Texture*> m_Textures;
+		std::vector<SDL_FRect> m_FRects;
 		SDL_Renderer* m_Renderer;
 
 	public:
@@ -44,7 +45,7 @@ namespace KOPY {
 			}
 		}
 
-		int LoadTexture(std::string& file_path) 
+		int LoadTexture(const std::string& file_path) 
 		{
 			if (m_Renderer == nullptr) {
 				LOG("Renderer not loaded to TextureHandler");
@@ -65,7 +66,44 @@ namespace KOPY {
 			}
 			m_Textures.emplace_back(_texture);
 			SDL_DestroySurface(_surface);
+
+			SDL_FRect frect = { 0, 0, 0, 0 };
+			m_FRects.emplace_back(frect);
+
+			LOG2("Texture Loaded from ", file_path);
 			return m_Textures.size() - 1;
+		}
+
+		bool ResizeTexture(int index, int width, int height)
+		{
+			if (index > m_Textures.size() - 1) {
+				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
+				return false;
+			}
+
+			m_FRects.at(index).w = width;
+			m_FRects.at(index).h = height;
+			return true;
+		}
+
+		bool PlaceTexture(int index, float pointx, float pointy)
+		{
+			if (index > m_Textures.size() - 1) {
+				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
+				return false;
+			}
+
+			m_FRects.at(index).x = pointx;
+			m_FRects.at(index).y = pointy;
+			LOG2("x : ", m_FRects.at(index).x);
+			LOG2("y : ", m_FRects.at(index).y);
+		}
+
+		void RenderAll()
+		{
+			for (int i = 0; i < m_Textures.size(); i++) {
+				SDL_RenderTexture(m_Renderer, m_Textures.at(i), NULL, &m_FRects.at(i));
+			}
 		}
 	};
 

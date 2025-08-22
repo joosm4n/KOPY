@@ -9,31 +9,45 @@
 #include <SDL3/SDL.h>
 #include <windows.h>
 
+#include "macros.h"
 #include "texturehandler.h"
 
-#define LOG(x) std::cout << x << std::endl
-#define LOG2(x, y) std::cout << x << y << std::endl
 
 // Internal DLL vars
+static bool KOPYInitalized = false;
 static bool SDLInitalized = false;
 static SDL_Window* _window = nullptr;
 static SDL_Renderer* _renderer = nullptr;
 static const SDL_Color SCREEN_CLR = { 0, 0, 0, 255 };
 static const SDL_Color NULL_CLR = { 255, 105, 180, 255 };
-static char* _str; 
 
 // File path stuff
 static KOPY::TextureHandler tHandler;
 static const std::string ASSETS_PATH = "C:/Users/Pengu/Documents/IdiotEngineers/KOPY/bin/assets/";
 
-bool OpenKOPYWindow()
+bool InitKOPY()
 {
+    ERR_HANDLE(KOPYInitalized, "KOPY already initalized", return false);
+    ERR_HANDLE(SDLInitalized, "SDL already initalized", return false);
+
+    KOPYInitalized = true;
+    SDLInitalized = false;
+    SDL_Window* _window = nullptr;
+    SDL_Renderer* _renderer = nullptr;
+    SDL_Color SCREEN_CLR = { 0, 0, 0, 255 };
+    SDL_Color NULL_CLR = { 255, 105, 180, 255 }; // pink
+    return true;
+}
+
+bool OpenKOPYWindow(int width, int height)
+{
+    ERR_HANDLE(SDLInitalized, "SDL already initalized", return false);
+
     if (!SDL_Init(SDL_INIT_VIDEO)) {
-        SDLInitalized = true;
         return false;
     }
 
-    _window = SDL_CreateWindow("SDL_Window", 1920, 1080, NULL);
+    _window = SDL_CreateWindow("SDL_Window", width, height, NULL);
     if (!_window) {
         LOG2(" SDL_CreateWindow error : ", SDL_GetError());
         SDL_Quit();
@@ -53,6 +67,8 @@ bool OpenKOPYWindow()
         LOG(" TextureHandler.SetRenderer() error ");
         return false;
     }
+    KOPYInitalized = true;
+    SDLInitalized = true;
     return true;
 }
 
@@ -84,6 +100,7 @@ bool DrawLine(const float pt1_x, const float pt1_y, const float pt2_x, const flo
 }
 
 bool RenderFrame() {
+    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
     tHandler.RenderAll();
     return SDL_RenderPresent(_renderer);
 }
@@ -94,11 +111,12 @@ int LoadTexture(char* file_path_in) {
     return tHandler.LoadTexture(path_str);
 }
 
-bool PlaceTexture(int index, int pointx, int pointy, int width, int height) {
-    LOG2("Placing Texture :     ", index);
+bool PlaceTexture(int index, int pointx, int pointy, int width, int height) 
+{
+    LOG2("Placing Texture : ", index);
     bool goodRet;
-    goodRet = tHandler.ResizeTexture(index, width, height);
-    goodRet &= tHandler.PlaceTexture(index, pointx, pointy);
+    goodRet = tHandler.ResizeTexture(index, (float) width, (float) height);
+    goodRet &= tHandler.PlaceTexture(index, (float) pointx, (float) pointy);
     return goodRet;
 }
 
@@ -114,17 +132,17 @@ bool ImportString(char* contents)
 
 bool ButtonPressed(KEYBOARD_BUTTON key)
 {    
+    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
+
     // Events
     SDL_Event key_press;
     while (SDL_PollEvent(&key_press))
     {
-        if (key_press.type == SDL_EVENT_QUIT)
-        {
+        if (key_press.type == SDL_EVENT_QUIT) {
             return false;
             break;
         }
-        else if (key_press.type == SDL_EVENT_KEY_DOWN)
-        {
+        else if (key_press.type == SDL_EVENT_KEY_DOWN) {
             switch (key_press.key.key)
             {
             case SDLK_ESCAPE:
@@ -143,5 +161,47 @@ bool ButtonPressed(KEYBOARD_BUTTON key)
 
 bool WaitForKeypress(KEYBOARD_BUTTON key)
 {
+    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
 
+    // Events
+    SDL_Event key_press;
+    size_t loop = 0;
+    bool running = true;
+    while (running) {
+        while (SDL_PollEvent(&key_press)) {
+            if (key_press.type == SDL_EVENT_QUIT) {
+                running = false;
+                break;
+            }
+            else if (key_press.type == SDL_EVENT_KEY_DOWN) {
+                switch (key_press.key.key)
+                {
+                case SDLK_ESCAPE:
+                    if (key == ESC)
+                        running = false;
+                    break;
+                case SDLK_E:
+                    if (key == E)
+                        running = false;
+                    break;
+                }
+            }
+        }
+        SDL_Delay(48);
+        loop++;
+        if (loop > 10000) return false;
+    }
+    return true;
+}
+
+bool DelayS(int s) {
+    ERR_HANDLE(!SDLInitalized, "SDL Not Initalized", return false);
+    SDL_Delay(s * 1000);
+    return true;
+}
+
+bool DelayMS(int ms) {
+    ERR_HANDLE(!SDLInitalized, "SDL Not Initalized", return false);
+    SDL_Delay(ms);
+    return true;
 }

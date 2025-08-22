@@ -1,12 +1,10 @@
 #pragma once
 
+#include "macros.h"
 #include <vector>
 #include <SDL3/SDL.h>
 #include <iostream>
 #include <string>
-
-#define LOG(x) std::cout << x << std::endl;
-#define LOG2(x, y) std::cout << x << y << std::endl;
 
 namespace KOPY {
 
@@ -71,10 +69,10 @@ namespace KOPY {
 			m_FRects.emplace_back(frect);
 
 			LOG2("Texture Loaded from ", file_path);
-			return m_Textures.size() - 1;
+			return (int)(m_Textures.size()) - 1;
 		}
 
-		bool ResizeTexture(int index, int width, int height)
+		bool ResizeTexture(int index, float width, float height)
 		{
 			if (index > m_Textures.size() - 1) {
 				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
@@ -97,6 +95,7 @@ namespace KOPY {
 			m_FRects.at(index).y = pointy;
 			LOG2("x : ", m_FRects.at(index).x);
 			LOG2("y : ", m_FRects.at(index).y);
+			return true;
 		}
 
 		void RenderAll()

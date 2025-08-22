@@ -1,14 +1,18 @@
 #pragma once
 
+#include "macros.h"
+
 #ifdef KOPY_EXPORTS
 #define KOPY_API __declspec(dllexport)
 #else
 #define KOPY_API __declspec(dllimport)
 #endif
 
+// Initalizes all KOPY stuff
+extern "C" KOPY_API bool InitKOPY();
 
 // Initalizes SDL and Creates SDL_Window and SDL_Renderer
-extern "C" KOPY_API bool OpenKOPYWindow();
+extern "C" KOPY_API bool OpenKOPYWindow(int width, int height);
 
 // Closes SDL and Destroys SDL_Window and SDL_Renderer
 extern "C" KOPY_API bool CloseKOPYWindow();
@@ -41,4 +45,8 @@ extern "C" KOPY_API bool ButtonPressed(KEYBOARD_BUTTON a);
 extern "C" KOPY_API bool WaitForKeypress(KEYBOARD_BUTTON key);
 
 // Testing passing a string
-extern "C" KOPY_API bool ImportString(char* buffer);
+extern "C" KOPY_API bool ImportString(char* buffer); // Must be 'ASCII' char* 
+
+// Delays
+extern "C" KOPY_API bool DelayMS(int ms);
+extern "C" KOPY_API bool DelayS(int s);

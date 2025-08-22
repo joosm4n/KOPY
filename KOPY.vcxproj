@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="macros.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="kopy.h" />
     <ClInclude Include="texturehandler.h" />

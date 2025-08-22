@@ -101,6 +101,7 @@ namespace KOPY {
 			}
 
 			m_Transforms.at(index).Rotation += degrees;
+			return true;
 		}
 
 		void RenderAll()

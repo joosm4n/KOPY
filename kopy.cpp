@@ -5,10 +5,12 @@
 #include <cstdio>
 #include <iostream>
 #include <string>
+#include <cmath>
 #include "kopy.h"
 #include <SDL3/SDL.h>
 #include "macros.h"
 #include "texturehandler.h"
+#include "KO_Maths/maths.h"
 
 // Internal DLL vars
 static bool KOPYInitalized = false;
@@ -16,6 +18,7 @@ static bool SDLInitalized = false;
 static SDL_Window* _window = nullptr;
 static SDL_Renderer* _renderer = nullptr;
 static SDL_Color SCREEN_CLR = { 0, 0, 0, 255 };
+static SDL_Color DRAW_CLR = { 255, 255, 255, 255 };
 static const SDL_Color NULL_CLR = { 255, 105, 180, 255 };
 
 // File path stuff
@@ -29,11 +32,6 @@ bool InitKOPY()
     ERR_HANDLE(SDLInitalized, "SDL already initalized", return false);
 
     KOPYInitalized = true;
-    SDLInitalized = false;
-    SDL_Window* _window = nullptr;
-    SDL_Renderer* _renderer = nullptr;
-    SDL_Color SCREEN_CLR = { 0, 0, 0, 255 };
-    SDL_Color NULL_CLR = { 255, 105, 180, 255 }; // pink
     return true;
 }
 
@@ -73,6 +71,7 @@ bool OpenKOPYWindow(int width, int height)
     }
     KOPYInitalized = true;
     SDLInitalized = true;
+    StartFrame();
     return true;
 }
 
@@ -97,11 +96,16 @@ bool CloseKOPYWindow()
 
 bool SetDrawColor(const int r, const int g, const int b, const int a) {
     ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
-    return SDL_SetRenderDrawColor(_renderer, SDL_clamp(r, 0, 255),
+    
+    SDL_Color clr = { r, g, b, a };
+    if (SAME_CLR(DRAW_CLR, clr)) return true;
+
+    else
+        return SDL_SetRenderDrawColor(_renderer, SDL_clamp(r, 0, 255),
                                                 SDL_clamp(g, 0, 255),
                                                 SDL_clamp(b, 0, 255),
                                                 SDL_clamp(a, 0, 255));
-}
+    }
 
 bool SetScreenColor(const int r, const int g, const int b, const int a) {
     SCREEN_CLR.r = SDL_clamp(r, 0, 255);
@@ -115,10 +119,59 @@ bool DrawLine(const float pt1_x, const float pt1_y, const float pt2_x, const flo
     return SDL_RenderLine(_renderer, pt1_x, pt1_y, pt2_x, pt2_y);
 }
 
+bool DrawCircle(const int pt_x, const int pt_y, const int radius) {
+
+    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
+    int numPts = radius * maths::KO_PI;
+    float inc =  maths::KO_PI / numPts;
+    int x, y;
+    maths::vec2 centre = { (float) pt_x, (float)pt_y };
+
+    for (float theta = 0; theta < maths::KO_PI; theta += inc) {
+        SDL_RenderPoint(_renderer, centre.x + (radius * cos(theta)),
+                                    centre.y + (radius * sin(theta)));
+
+        SDL_RenderPoint(_renderer, centre.x - (radius * cos(theta)),
+                                    centre.y - (radius * sin(theta)));
+    }
+    return true;
+}
+
+bool DrawFilledCircle(const int pt_x, const int pt_y, const int radius)
+{
+    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
+    int xMin = pt_x - radius;
+    int xMax = pt_x + radius;
+    int yMin = pt_y - radius;
+    int yMax = pt_y + radius;
+
+    maths::vec2 centre = { (float) pt_x, (float) pt_y };
+    maths::vec2 point;
+    maths::vec2 diff;
+    std::vector<maths::vec2> drawPts;
+    drawPts.reserve((xMax - xMin) * (yMax - yMin));
+
+    for (int x = xMin; x < xMax; x++) {
+        for (int y = yMin; y < yMax; y++) {
+            point = { (float) x, (float) y };
+            diff = centre - point;
+            if (length(diff) < radius)
+                SDL_RenderPoint(_renderer, x, y);
+        }
+    }
+    return true;
+}
+
+bool StartFrame() {
+    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
+    bool success = true;
+    success &= SDL_SetRenderDrawColor(_renderer, SCREEN_CLR.r, SCREEN_CLR.g, SCREEN_CLR.b, SCREEN_CLR.a);
+    success &= SDL_RenderClear(_renderer);
+    return success;
+}
+
 bool RenderFrame() {
     ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
-    SDL_SetRenderDrawColor(_renderer, SCREEN_CLR.r, SCREEN_CLR.g, SCREEN_CLR.b, SCREEN_CLR.a);
-    SDL_RenderClear(_renderer);
     tHandler.RenderAll();
     return SDL_RenderPresent(_renderer);
 }
@@ -183,6 +236,10 @@ bool ButtonPressed(KEYBOARD_BUTTON key)
                 if (key == E)
                     return true;
                 break;
+            case SDLK_T:
+                if (key == T)
+                    return true;
+                break;
             }
         }
     }
@@ -217,7 +274,7 @@ bool WaitForKeypress(KEYBOARD_BUTTON key)
                 }
             }
         }
-        SDL_Delay(48);
+        SDL_Delay(16);
         loop++;
         if (loop > 10000) return false;
     }

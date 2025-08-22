@@ -128,7 +128,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;KOPY_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -168,6 +168,14 @@
   <ItemGroup>
     <ClInclude Include="dependencies\SDL3_image\SDL_image.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="KO_Maths\enums.h" />
+    <ClInclude Include="KO_Maths\mat3.h" />
+    <ClInclude Include="KO_Maths\mat4.h" />
+    <ClInclude Include="KO_Maths\maths.h" />
+    <ClInclude Include="KO_Maths\maths_func.h" />
+    <ClInclude Include="KO_Maths\vec2.h" />
+    <ClInclude Include="KO_Maths\vec3.h" />
+    <ClInclude Include="KO_Maths\vec4.h" />
     <ClInclude Include="macros.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="kopy.h" />
@@ -176,6 +184,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="KO_Maths\mat3.cpp" />
+    <ClCompile Include="KO_Maths\mat4.cpp" />
+    <ClCompile Include="KO_Maths\maths_func.cpp" />
+    <ClCompile Include="KO_Maths\vec2.cpp" />
+    <ClCompile Include="KO_Maths\vec3.cpp" />
+    <ClCompile Include="KO_Maths\vec4.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

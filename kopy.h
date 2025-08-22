@@ -25,10 +25,13 @@ extern "C" KOPY_API bool SetDrawColor(const int r, const int g, const int b, con
 //
 extern "C" KOPY_API bool SetScreenColor(const int r, const int g, const int b, const int a);
 
-// Draws a line from pt1 to pt2 with current color
+// Draw Funcs
 extern "C" KOPY_API bool DrawLine(const float pt1_x, const float pt1_y, const float pt2_x, const float pt2_y);
+extern "C" KOPY_API bool DrawCircle(const int pt_x, const int pt_y, const int radius);
+extern "C" KOPY_API bool DrawFilledCircle(const int pt_x, const int pt_y, const int radius);
 
-// SDL_RenderPresent
+// Render calls
+extern "C" KOPY_API bool StartFrame();
 extern "C" KOPY_API bool RenderFrame();
 
 // Textures	

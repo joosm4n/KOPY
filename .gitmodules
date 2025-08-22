@@ -1,0 +1,3 @@
+[submodule "KO_Maths"]
+	path = KO_Maths
+	url = https://github.com/joosm4n/KO_Maths.git

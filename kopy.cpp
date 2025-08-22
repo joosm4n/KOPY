@@ -7,11 +7,8 @@
 #include <string>
 #include "kopy.h"
 #include <SDL3/SDL.h>
-#include <windows.h>
-
 #include "macros.h"
 #include "texturehandler.h"
-
 
 // Internal DLL vars
 static bool KOPYInitalized = false;
@@ -23,7 +20,8 @@ static const SDL_Color NULL_CLR = { 255, 105, 180, 255 };
 
 // File path stuff
 static KOPY::TextureHandler tHandler;
-static const std::string ASSETS_PATH = "C:/Users/Pengu/Documents/IdiotEngineers/KOPY/bin/assets/";
+static std::string SCRIPT_PATH;
+static const std::string ASSETS_PATH = "bin/assets/";
 
 bool InitKOPY()
 {
@@ -37,6 +35,11 @@ bool InitKOPY()
     SDL_Color SCREEN_CLR = { 0, 0, 0, 255 };
     SDL_Color NULL_CLR = { 255, 105, 180, 255 }; // pink
     return true;
+}
+
+bool SetScriptPath(char* path)
+{
+    std::string _str;
 }
 
 bool OpenKOPYWindow(int width, int height)

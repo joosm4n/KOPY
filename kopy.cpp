@@ -14,9 +14,11 @@
 #include "texturehandler.h"
 #include "eventhandler.h"
 
-// Internal DLL vars
+// Inits
 static bool KOPYInitalized = false;
 static bool SDLInitalized = false;
+
+// SDL
 static SDL_Window* _window = nullptr;
 static SDL_Renderer* _renderer = nullptr;
 static SDL_Color SCREEN_CLR = { 0, 0, 0, 255 };
@@ -31,25 +33,20 @@ static KOPY::EventHandler eHandler;
 static std::string SCRIPT_PATH;
 static const std::string ASSETS_PATH = "/bin/assets/";
 
-bool InitKOPY()
-{
+bool InitKOPY() {
     ERR_HANDLE(KOPYInitalized, "KOPY already initalized", return false);
     ERR_HANDLE(SDLInitalized, "SDL already initalized", return false);
-
     KOPYInitalized = true;
     return true;
 }
 
-bool SetScriptPath(char* path)
-{
+bool SetScriptPath(char* path) {
     SCRIPT_PATH = path;
     return true;
 }
 
-bool OpenKOPYWindow(int width, int height)
-{
+bool OpenKOPYWindow(int width, int height) {
     ERR_HANDLE(SDLInitalized, "SDL already initalized", return false);
-
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         return false;
     }
@@ -80,20 +77,17 @@ bool OpenKOPYWindow(int width, int height)
     return true;
 }
 
-
-bool CloseKOPYWindow()
-{
-    if (!SDLInitalized) return false;
+bool CloseKOPYWindow() {
+    ERR_HANDLE(!KOPYInitalized, "KOPY NOT INITALIZED", return false);
+    ERR_HANDLE(!SDLInitalized, "SDL NOT INITALIZED", return false);
 
     tHandler.~TextureHandler();
 
-    if (_renderer != nullptr) {
+    if (_renderer != nullptr)
         SDL_DestroyRenderer(_renderer);
-    }
 
-    if (_window != nullptr) {
+    if (_window != nullptr)
         SDL_DestroyWindow(_window);
-    }
 
     SDL_Quit();
     return true;
@@ -110,7 +104,7 @@ bool SetDrawColor(const int r, const int g, const int b, const int a) {
                                                 SDL_clamp(g, 0, 255),
                                                 SDL_clamp(b, 0, 255),
                                                 SDL_clamp(a, 0, 255));
-    }
+}
 
 bool SetScreenColor(const int r, const int g, const int b, const int a) {
     SCREEN_CLR.r = SDL_clamp(r, 0, 255);
@@ -164,6 +158,25 @@ bool DrawFilledCircle(const int pt_x, const int pt_y, const int radius)
                 SDL_RenderPoint(_renderer, x, y);
         }
     }
+    return true;
+}
+
+bool DrawRect(const int pt_x, const int pt_y, const int width, const int height, const int rotation) {
+    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
+
+    SDL_FRect frect = { pt_x, pt_y, width, height };
+    if (rotation == 0) {
+        SDL_RenderRect(_renderer, &frect);
+        return true;
+    }
+
+    KOPY::Transform transform( frect , rotation );
+    std::array<int, 8> pts;
+    transform.GetRotatedRectPts(&pts);
+    SDL_RenderLine(_renderer, pts.at(0), pts.at(1), pts.at(2), pts.at(3));
+    SDL_RenderLine(_renderer, pts.at(2), pts.at(3), pts.at(4), pts.at(5));
+    SDL_RenderLine(_renderer, pts.at(4), pts.at(5), pts.at(6), pts.at(7));
+    SDL_RenderLine(_renderer, pts.at(6), pts.at(7), pts.at(0), pts.at(1));
     return true;
 }
 
@@ -222,14 +235,14 @@ bool PollEvents() {
 
 bool KeyPressed(unsigned int key_in) {    
     ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
-    KO_KEY key = static_cast<KO_KEY>(key_in);
+    KOPY::KO_KEY key = static_cast<KOPY::KO_KEY>(key_in);
     return eHandler.IsKeyPressed(key);
 }
 
 bool WaitForKeypress(unsigned int key_in) {
     ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
 
-    KO_KEY key = static_cast<KO_KEY>(key_in);
+    KOPY::KO_KEY key = static_cast<KOPY::KO_KEY>(key_in);
     size_t loop = 0;
     bool running = true;
     while (running) {

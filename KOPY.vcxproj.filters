@@ -63,7 +63,7 @@
     <ClInclude Include="eventhandler.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="enums.h">
+    <ClInclude Include="event_enums.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

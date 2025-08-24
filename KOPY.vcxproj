@@ -167,7 +167,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="dependencies\SDL3_image\SDL_image.h" />
-    <ClInclude Include="enums.h" />
+    <ClInclude Include="event_enums.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="KO_Maths\enums.h" />
     <ClInclude Include="KO_Maths\mat3.h" />

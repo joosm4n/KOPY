@@ -1,7 +1,7 @@
 #pragma once
 
 #include "macros.h"
-#include "enums.h"
+#include "event_enums.h"
 
 #ifdef KOPY_EXPORTS
 #define KOPY_API __declspec(dllexport)
@@ -9,11 +9,11 @@
 #define KOPY_API __declspec(dllimport)
 #endif
 
-// Initalizes all KOPY stuff
+// Interfacing stuff
 extern "C" KOPY_API bool InitKOPY();
 extern "C" KOPY_API bool SetScriptPath(char* path);
 
-// Initalizes SDL and Creates SDL_Window and SDL_Renderer
+// Init() and Quit() commands for SDL
 extern "C" KOPY_API bool OpenKOPYWindow(int width, int height);
 extern "C" KOPY_API bool CloseKOPYWindow();
 
@@ -21,10 +21,11 @@ extern "C" KOPY_API bool CloseKOPYWindow();
 extern "C" KOPY_API bool SetDrawColor(const int r, const int g, const int b, const int a);
 extern "C" KOPY_API bool SetScreenColor(const int r, const int g, const int b, const int a);
 
-// Draw Funcs
+// Draw Geometry Funcs
 extern "C" KOPY_API bool DrawLine(const float pt1_x, const float pt1_y, const float pt2_x, const float pt2_y);
 extern "C" KOPY_API bool DrawCircle(const int pt_x, const int pt_y, const int radius);
 extern "C" KOPY_API bool DrawFilledCircle(const int pt_x, const int pt_y, const int radius);
+extern "C" KOPY_API bool DrawRect(const int pt_x, const int pt_y, const int width, const int height, const int rotation);
 
 // Render calls
 extern "C" KOPY_API bool StartFrame();

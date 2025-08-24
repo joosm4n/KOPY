@@ -6,11 +6,13 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include "kopy.h"
+
 #include <SDL3/SDL.h>
-#include "macros.h"
-#include "texturehandler.h"
+
+#include "kopy.h"
 #include "KO_Maths/maths.h"
+#include "texturehandler.h"
+#include "eventhandler.h"
 
 // Internal DLL vars
 static bool KOPYInitalized = false;
@@ -21,8 +23,11 @@ static SDL_Color SCREEN_CLR = { 0, 0, 0, 255 };
 static SDL_Color DRAW_CLR = { 255, 255, 255, 255 };
 static const SDL_Color NULL_CLR = { 255, 105, 180, 255 };
 
-// File path stuff
+// Handlers
 static KOPY::TextureHandler tHandler;
+static KOPY::EventHandler eHandler;
+
+// Filepaths
 static std::string SCRIPT_PATH;
 static const std::string ASSETS_PATH = "/bin/assets/";
 
@@ -137,7 +142,7 @@ bool DrawCircle(const int pt_x, const int pt_y, const int radius) {
     return true;
 }
 
-bool DrawFilledCircle(const int pt_x, const int pt_y, const int radius)
+bool DrawFilledCircle(const int pt_x, const int pt_y, const int radius) 
 {
     ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
     int xMin = pt_x - radius;
@@ -173,6 +178,7 @@ bool StartFrame() {
 bool RenderFrame() {
     ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
     tHandler.RenderAll();
+    eHandler.EventPoll();
     return SDL_RenderPresent(_renderer);
 }
 
@@ -182,8 +188,7 @@ int LoadTexture(char* file_name) {
     return tHandler.LoadTexture(path_str);
 }
 
-bool PlaceTexture(int index, int pointx, int pointy, int width, int height) 
-{
+bool PlaceTexture(int index, int pointx, int pointy, int width, int height) {
     LOG2("Placing Texture : ", index);
     bool goodRet;
     goodRet = tHandler.ResizeTexture(index, (float) width, (float) height);
@@ -191,20 +196,17 @@ bool PlaceTexture(int index, int pointx, int pointy, int width, int height)
     return goodRet;
 }
 
-bool MoveTexture(int index, int pointx, int pointy)
-{
+bool MoveTexture(int index, int pointx, int pointy) {
     ERR_HANDLE(!SDLInitalized, "SDL not initalized", return false);
     return tHandler.MoveTexture(index, (float)pointx, (float)pointy);
 }
 
-bool RotateTexture(int index, int degrees)
-{
+bool RotateTexture(int index, int degrees) {
     ERR_HANDLE(!SDLInitalized, "SDL not initalized", return false);
     return tHandler.RotateTexture(index, degrees);
 }
 
-bool ImportString(char* contents)
-{
+bool ImportString(char* contents) {
     const std::string str_in = contents;
     LOG2("Imported String : ", contents);
     if (strcmp(str_in.c_str(), contents))
@@ -213,70 +215,30 @@ bool ImportString(char* contents)
         return false;
 }
 
-bool ButtonPressed(KEYBOARD_BUTTON key)
-{    
+bool PollEvents() {
     ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
-
-    // Events
-    SDL_Event key_press;
-    while (SDL_PollEvent(&key_press))
-    {
-        if (key_press.type == SDL_EVENT_QUIT) {
-            return false;
-            break;
-        }
-        else if (key_press.type == SDL_EVENT_KEY_DOWN) {
-            switch (key_press.key.key)
-            {
-            case SDLK_ESCAPE:
-                if (key == ESC)
-                    return true;
-                break;
-            case SDLK_E:
-                if (key == E)
-                    return true;
-                break;
-            case SDLK_T:
-                if (key == T)
-                    return true;
-                break;
-            }
-        }
-    }
-    return false;
+    return eHandler.EventPoll();
 }
 
-bool WaitForKeypress(KEYBOARD_BUTTON key)
-{
+bool KeyPressed(unsigned int key_in) {    
+    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
+    KO_KEY key = static_cast<KO_KEY>(key_in);
+    return eHandler.IsKeyPressed(key);
+}
+
+bool WaitForKeypress(unsigned int key_in) {
     ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
 
-    // Events
-    SDL_Event key_press;
+    KO_KEY key = static_cast<KO_KEY>(key_in);
     size_t loop = 0;
     bool running = true;
     while (running) {
-        while (SDL_PollEvent(&key_press)) {
-            if (key_press.type == SDL_EVENT_QUIT) {
-                running = false;
-                break;
-            }
-            else if (key_press.type == SDL_EVENT_KEY_DOWN) {
-                switch (key_press.key.key)
-                {
-                case SDLK_ESCAPE:
-                    if (key == ESC)
-                        running = false;
-                    break;
-                case SDLK_E:
-                    if (key == E)
-                        running = false;
-                    break;
-                }
-            }
-        }
-        SDL_Delay(16);
+        
+        eHandler.EventPoll();
+        running = !eHandler.IsKeyPressed(key);
+        SDL_Delay(8);
         loop++;
-        if (loop > 10000) return false;
+        if (loop > 100000) return false;
     }
     return true;
 }

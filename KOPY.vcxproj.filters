@@ -60,6 +60,12 @@
     <ClInclude Include="KO_Maths\vec4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="eventhandler.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="enums.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

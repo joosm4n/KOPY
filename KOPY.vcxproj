@@ -167,6 +167,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="dependencies\SDL3_image\SDL_image.h" />
+    <ClInclude Include="enums.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="KO_Maths\enums.h" />
     <ClInclude Include="KO_Maths\mat3.h" />
@@ -184,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClInclude Include="eventhandler.h" />
     <ClCompile Include="KO_Maths\mat3.cpp" />
     <ClCompile Include="KO_Maths\mat4.cpp" />
     <ClCompile Include="KO_Maths\maths_func.cpp" />

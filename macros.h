@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #define DEBUG 1
 
 #if DEBUG

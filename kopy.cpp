@@ -164,6 +164,12 @@ bool DrawFilledCircle(const int pt_x, const int pt_y, const int radius)
 bool DrawRect(const int pt_x, const int pt_y, const int width, const int height, const int rotation) {
     ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
 
+    LOG2(" x : ", pt_x);
+    LOG2(" y : ", pt_y);
+    LOG2(" w : ", width);
+    LOG2(" h : ", height);
+    LOG2(" r : ", rotation);
+
     SDL_FRect frect = { pt_x, pt_y, width, height };
     if (rotation == 0) {
         SDL_RenderRect(_renderer, &frect);
@@ -173,6 +179,17 @@ bool DrawRect(const int pt_x, const int pt_y, const int width, const int height,
     KOPY::Transform transform( frect , rotation );
     std::array<int, 8> pts;
     transform.GetRotatedRectPts(&pts);
+
+    LOG("Transformed Points :");
+    LOG2("0 : ", pts.at(0));
+    LOG2("1 : ", pts.at(1));
+    LOG2("2 : ", pts.at(2));
+    LOG2("3 : ", pts.at(3));
+    LOG2("4 : ", pts.at(4));
+    LOG2("5 : ", pts.at(5));
+    LOG2("6 : ", pts.at(6));
+    LOG2("7 : ", pts.at(7));
+
     SDL_RenderLine(_renderer, pts.at(0), pts.at(1), pts.at(2), pts.at(3));
     SDL_RenderLine(_renderer, pts.at(2), pts.at(3), pts.at(4), pts.at(5));
     SDL_RenderLine(_renderer, pts.at(4), pts.at(5), pts.at(6), pts.at(7));

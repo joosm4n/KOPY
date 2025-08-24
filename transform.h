@@ -29,19 +29,22 @@ namespace KOPY {
 		}
 
 		void GetRotatedRectPts(std::array<int, 8>* int_array_out) const {
-			const float cx = FRect.x + (FRect.w * 0.5f);
-			const float cy = FRect.y + (FRect.h * 0.5f);
+			const float halfW = FRect.w * 0.5f;
+			const float halfH = FRect.h * 0.5f;
+			const float cx = FRect.x + halfW;
+			const float cy = FRect.y + halfH;
 			
-			float diffx, diffy;
 			float cos_t = cos(maths::toRadians(Rotation));
 			float sin_t = sin(maths::toRadians(Rotation));
-			for (int i = 0; i < 8; i += 2) {
-				diffx = FRect.x - cx;
-				diffy = FRect.y - cy;
 
-				int_array_out->at(i) = (diffx * cos_t - diffy * sin_t) + cx;
-				int_array_out->at(i + 1) = (diffx * sin_t + diffy * cos_t) + cy;
-			}
+			int_array_out->at(0) = ((cx - FRect.x		 ) * cos_t - (cy - FRect.y		  ) * sin_t) + FRect.x;
+			int_array_out->at(1) = ((cx - FRect.x		 ) * sin_t + (cx - FRect.y		  ) * cos_t) + FRect.y;
+			int_array_out->at(2) = ((cx - FRect.x + halfW) * cos_t - (cy - FRect.y		  ) * sin_t) + FRect.x;
+			int_array_out->at(3) = ((cx - FRect.x + halfW) * sin_t + (cx - FRect.y		  ) * cos_t) + FRect.y;
+			int_array_out->at(4) = ((cx - FRect.x + halfW) * cos_t - (cy - FRect.y + halfW) * sin_t) + FRect.x;
+			int_array_out->at(5) = ((cx - FRect.x + halfW) * sin_t + (cx - FRect.y + halfW) * cos_t) + FRect.y;
+			int_array_out->at(6) = ((cx - FRect.x		 ) * cos_t - (cy - FRect.y + halfW) * sin_t) + FRect.x;
+			int_array_out->at(7) = ((cx - FRect.x		 ) * sin_t + (cx - FRect.y + halfW) * cos_t) + FRect.y;
 			return;
 		}
 	};

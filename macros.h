@@ -5,10 +5,12 @@
 #define DEBUG 1
 
 #if DEBUG
+#define LOGn(x) std::cout << x
 #define LOG(x) std::cout << x << std::endl
 #define LOG2(x, y) std::cout << x << y << std::endl
 #define ERR_HANDLE(x, y, z) if (x) { LOG(y); z; }
 #elif
+#define LOGn(x)
 #define LOG(x)
 #define LOG2(x, y)
 #define ERR_HANDLE(x, y)

@@ -166,6 +166,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="collisionhandler.h" />
     <ClInclude Include="dependencies\SDL3_image\SDL_image.h" />
     <ClInclude Include="event_enums.h" />
     <ClInclude Include="framework.h" />

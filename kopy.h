@@ -40,6 +40,8 @@ extern "C" KOPY_API bool PlaceTexture(unsigned int index, float pointx, float po
 extern "C" KOPY_API bool MoveTexture(unsigned int index, float pointx, float pointy);
 extern "C" KOPY_API bool RotateTexture(unsigned int index, float degrees);
 extern "C" KOPY_API bool PushTexture(unsigned int index, float push_x, float push_y);
+extern "C" KOPY_API bool SetVel(unsigned int index, KOPY::Vec2 vel);
+extern "C" KOPY_API bool SetRotVel(unsigned int index, float rotVel);
 
 // Event handling
 extern "C" KOPY_API bool PollEvents();
@@ -54,3 +56,7 @@ extern "C" KOPY_API KOPY::Vec2 ReturnVec2(KOPY::Vec2 vecIn);
 // Delays
 extern "C" KOPY_API bool DelayMS(int ms);
 extern "C" KOPY_API bool DelayS(int s);
+
+// Game Stuff
+extern "C" KOPY_API int CreateAsteroid(KOPY::Vec2 pos, KOPY::Vec2 size);
+extern "C" KOPY_API bool UpdatePhysics();

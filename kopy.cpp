@@ -12,6 +12,7 @@
 #include "kopy.h"
 #include "texturehandler.h"
 #include "eventhandler.h"
+#include "collisionhandler.h"
 
 // Inits
 static bool KOPYInitalized = false;
@@ -27,14 +28,18 @@ static const SDL_Color NULL_CLR = { 255, 105, 180, 255 };
 // Handlers
 static KOPY::TextureHandler tHandler;
 static KOPY::EventHandler eHandler;
+static KOPY::CollisionHandler cHandler;
 
 // Filepaths
 static std::string SCRIPT_PATH;
-static const std::string ASSETS_PATH = "/bin/assets/";
+static std::string ASSETS_PATH = "/bin/assets/";
 
 // Testing
-static maths::vec2 _vec = { 69, 420 };
 static KOPY::Vec2 _retVec;
+static const char* _asteroidName = "Asteroid_small.png";
+static bool _DebugView = true;
+static int _ErrorCode = 0;
+static float _deltaTime = 1.0f;
 
 bool InitKOPY() {
     ERR_HANDLE(KOPYInitalized, "KOPY already initalized", return false);
@@ -45,6 +50,10 @@ bool InitKOPY() {
 
 bool SetScriptPath(char* path) {
     SCRIPT_PATH = path;
+    return true;
+}
+bool SetAssetsPath(char* path) {
+    ASSETS_PATH = path;
     return true;
 }
 
@@ -116,11 +125,11 @@ bool SetScreenColor(const int r, const int g, const int b, const int a) {
 }
 
 bool DrawLine(const float pt1_x, const float pt1_y, const float pt2_x, const float pt2_y) {
+    ERR_SDLINIT;
     return SDL_RenderLine(_renderer, pt1_x, pt1_y, pt2_x, pt2_y);
 }
 
 bool DrawCircle(const int pt_x, const int pt_y, const int radius) {
-
     ERR_SDLINIT;
     int numPts = radius * maths::KO_PI;
     float inc =  maths::KO_PI / numPts;
@@ -137,8 +146,7 @@ bool DrawCircle(const int pt_x, const int pt_y, const int radius) {
     return true;
 }
 
-bool DrawFilledCircle(const int pt_x, const int pt_y, const int radius) 
-{
+bool DrawFilledCircle(const int pt_x, const int pt_y, const int radius) {
     ERR_SDLINIT;
     int xMin = pt_x - radius;
     int xMax = pt_x + radius;
@@ -163,7 +171,7 @@ bool DrawFilledCircle(const int pt_x, const int pt_y, const int radius)
 }
 
 bool DrawRect(const int pt_x, const int pt_y, const int width, const int height, const int rotation) {
-    ERR_SDLINIT;
+    ERR_INITS;
     SDL_FRect frect = { pt_x, pt_y, width, height };
     if (rotation == 0) {
         SDL_RenderRect(_renderer, &frect);
@@ -182,7 +190,7 @@ bool DrawRect(const int pt_x, const int pt_y, const int width, const int height,
 }
 
 bool StartFrame() {
-    ERR_SDLINIT;
+    ERR_INITS;
     bool success = true;
     success &= SDL_SetRenderDrawColor(_renderer, SCREEN_CLR.r, SCREEN_CLR.g, SCREEN_CLR.b, SCREEN_CLR.a);
     success &= SDL_RenderClear(_renderer);
@@ -190,31 +198,31 @@ bool StartFrame() {
 }
 
 bool RenderFrame() {
-    ERR_SDLINIT;
+    ERR_INITS;
     tHandler.RenderAll();
     eHandler.EventPoll();
     return SDL_RenderPresent(_renderer);
 }
 
 int LoadTexture(char* file_name) {
-    ERR_SDLINIT;
+    ERR_INITS;
     const std::string path_str = SCRIPT_PATH + ASSETS_PATH + file_name;
     LOG2("FilePath : ", path_str);
     return tHandler.LoadTexture(path_str);
 }
 
 bool ShowTexture(unsigned int index) {
-    ERR_SDLINIT;
+    ERR_INITS;
     return tHandler.ShowTexture(index);
 }
 
 bool HideTexture(unsigned int index) {
-    ERR_SDLINIT;
+    ERR_INITS;
     return tHandler.HideTexture(index);
 }
 
 bool PlaceTexture(unsigned int index, float pointx, float pointy, float width, float height) {
-    ERR_SDLINIT;
+    ERR_INITS;
     bool goodRet;
     goodRet = tHandler.ResizeTexture(index, width, height);
     goodRet &= tHandler.MoveTexture(index, pointx, pointy);
@@ -223,18 +231,28 @@ bool PlaceTexture(unsigned int index, float pointx, float pointy, float width, f
 }
 
 bool MoveTexture(unsigned int index, float pointx, float pointy) {
-    ERR_SDLINIT;
+    ERR_INITS;
     return tHandler.MoveTexture(index, pointx, pointy);
 }
 
 bool PushTexture(unsigned int index, float push_x, float push_y) {
-    ERR_SDLINIT;
+    ERR_INITS;
     return tHandler.PushTexture(index, push_x, push_y);
 }
 
 bool RotateTexture(unsigned int index, float degrees) {
-    ERR_SDLINIT;
+    ERR_INITS;
     return tHandler.RotateTexture(index, degrees);
+}
+
+bool SetVel(unsigned int index, KOPY::Vec2 vel) {
+    ERR_INITS;
+    return tHandler.SetVel(index, vel);
+}
+
+bool SetRotVel(unsigned int index, float rotVel) {
+    ERR_INITS;
+    return tHandler.SetRotVel(index, rotVel);
 }
 
 bool ImportString(char* contents) {
@@ -247,23 +265,22 @@ bool ImportString(char* contents) {
 }
 
 bool PollEvents() {
-    ERR_SDLINIT;
+    ERR_INITS;
     return eHandler.EventPoll();
 }
 
 bool KeyPressed(unsigned int key_in) {    
-    ERR_SDLINIT;
+    ERR_INITS;
     KOPY::KO_KEY key = static_cast<KOPY::KO_KEY>(key_in);
     return eHandler.IsKeyPressed(key);
 }
 
 bool WaitForKeypress(unsigned int key_in) {
-    ERR_SDLINIT;
+    ERR_INITS;
     KOPY::KO_KEY key = static_cast<KOPY::KO_KEY>(key_in);
     size_t loop = 0;
     bool running = true;
     while (running) {
-        
         eHandler.EventPoll();
         running = !eHandler.IsKeyPressed(key);
         SDL_Delay(8);
@@ -274,13 +291,13 @@ bool WaitForKeypress(unsigned int key_in) {
 }
 
 bool DelayS(int s) {
-    ERR_SDLINIT;
+    ERR_INITS;
     SDL_Delay(s * 1000);
     return true;
 }
 
 bool DelayMS(int ms) {
-    ERR_SDLINIT;
+    ERR_INITS;
     SDL_Delay(ms);
     return true;
 }
@@ -292,5 +309,43 @@ bool PassingVec2(KOPY::Vec2 vec) {
 
 KOPY::Vec2 ReturnVec2(KOPY::Vec2 vecIn) {
     LOG2("Sending : ", OLVec2(vecIn));
-    return KOPY::MathsToKopy(_vec);
+    _retVec = vecIn;
+    return _retVec;
+}
+
+
+//------- Testing Asteroids -----------//
+
+int CreateAsteroid(KOPY::Vec2 pos, KOPY::Vec2 size) {
+    ERR_INITS;
+    bool result = true;
+    const std::string path_str = SCRIPT_PATH + ASSETS_PATH + _asteroidName;
+    int index = tHandler.LoadTexture(path_str);
+    result &= tHandler.MoveTexture(index, pos.x, pos.y);
+    result &= tHandler.ResizeTexture(index, size.x, size.y);
+    result &= tHandler.ShowTexture(index);
+    result &= cHandler.AddCollider(index);
+
+    KOPY::Transform& tform = *tHandler.GetTransform(index);
+    LOG2("Asteroid Created at ", maths::vec2(tform.FRect.x, tform.FRect.y));
+
+    if (!result) {
+        return -1;
+    }
+    else {
+        return index;
+    }
+}
+
+bool UpdatePhysics() {
+    ERR_INITS;
+    bool result = true;
+    //LOG("Init");
+    result &= cHandler.Detect(tHandler);
+    //LOG("Detected");
+    result &= cHandler.Solve(_deltaTime);
+    //LOG("Solved");
+    tHandler.UpdatePhys(_deltaTime);
+    //LOG("Updated");
+    return result;
 }

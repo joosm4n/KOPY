@@ -7,18 +7,23 @@
 #include <iostream>
 #include <string>
 #include "transform.h"
+#include <memory>
 
 namespace KOPY {
+
+#define ERR_INDEX(retCmd) if (index > m_Textures.size() - 1) { LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1); retCmd; }
 
 	class TextureHandler
 	{
 	private:
 		std::vector<SDL_Texture*> m_Textures;
-		std::vector<Transform> m_Transforms;
+		std::vector<std::shared_ptr<Transform>> m_Transforms;
 		std::vector<bool> m_RenderFlags;
 		SDL_Renderer* m_Renderer;
 
 	public:
+		bool m_DebugView = false;
+
 		TextureHandler()
 			: m_Renderer(nullptr)
 		{ }
@@ -27,8 +32,7 @@ namespace KOPY {
 			: m_Renderer(renderer)
 		{ }
 
-		~TextureHandler()
-		{ 
+		~TextureHandler() { 
 			for (int i = 0; i < m_Textures.size(); i++) {
 				SDL_DestroyTexture(m_Textures.at(i));
 			}
@@ -65,28 +69,29 @@ namespace KOPY {
 			}
 			m_Textures.emplace_back(_texture);
 			SDL_DestroySurface(_surface);
-			SDL_FRect frect = { 0, 0, _texture->w, _texture->h };
-			m_Transforms.emplace_back(Transform(frect));
+			Transform tform(0, 0, _texture->w, _texture->h, 0);
+			m_Transforms.emplace_back(std::make_shared<Transform>(tform));
 			m_RenderFlags.emplace_back(false);
 
 			LOG2("Texture Loaded from ", file_path);
 			return (int)(m_Textures.size()) - 1;
 		}
 
-		bool ResizeTexture(unsigned int index, float width, float height) {
-			if (index > m_Textures.size() - 1) {
-				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
+		inline bool GoodIndex(unsigned int index) const {
+			if (index > m_Textures.size() - 1)
 				return false;
-			}
-			m_Transforms.at(index).SetSize(width, height);
+			else
+				return true;
+		}
+
+		bool ResizeTexture(unsigned int index, float width, float height) {
+			ERR_INDEX(return false);
+			m_Transforms.at(index)->SetSize(width, height);
 			return true;
 		}
 
 		bool ShowTexture(unsigned int index) {
-			if (index > m_Textures.size() - 1) {
-				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
-				return false;
-			}
+			ERR_INDEX(return false);
 			m_RenderFlags.at(index) = true;
 			return true;
 		}
@@ -106,7 +111,7 @@ namespace KOPY {
 				return false;
 			}
 
-			m_Transforms.at(index).SetPos(pointx, pointy);
+			m_Transforms.at(index)->SetPos(pointx, pointy);
 			return true;
 		}
 
@@ -115,26 +120,55 @@ namespace KOPY {
 				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
 				return false;
 			}
-			m_Transforms.at(index).FRect.x += push_x;
-			m_Transforms.at(index).FRect.y += push_y;
+			m_Transforms.at(index)->FRect.x += push_x;
+			m_Transforms.at(index)->FRect.y += push_y;
 		}
 
 		bool RotateTexture(unsigned int index, float degrees) {
-			if (index > m_Textures.size() - 1) {
-				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
-				return false;
-			}
-			m_Transforms.at(index).Rotation += degrees;
+			ERR_INDEX(return false);
+			m_Transforms.at(index)->Rotation += degrees;
 			return true;
 		}
 
-		void RenderAll()
-		{
+		bool SetVel(unsigned int index, KOPY::Vec2 vel) {
+			ERR_INDEX(return false);
+			m_Transforms.at(index)->Velocity = KopyToMaths(vel);
+			return true;
+		}
+
+		bool SetRotVel(unsigned int index, float rotVel) {
+			ERR_INDEX(return false);
+			m_Transforms.at(index)->RotVel = rotVel;
+			return true;
+		}
+
+		Vec2 GetCentre(unsigned int index) const {
+			ERR_INDEX(return MakeVec2(0, 0));
+			return m_Transforms.at(index)->Centre();
+		}
+
+		float GetRadius(unsigned int index) const {
+			ERR_INDEX(return -1);
+			return m_Transforms.at(index)->Radius();
+		}
+
+		std::shared_ptr<Transform> GetTransform(unsigned int index) {
+			return m_Transforms.at(index);
+		}
+
+		void RenderAll() {
 			for (int i = 0; i < m_Textures.size(); i++) {
 				SDL_RenderTextureRotated(m_Renderer, m_Textures.at(i), NULL,
-											&m_Transforms.at(i).FRect,
-											m_Transforms.at(i).Rotation,
+											&m_Transforms.at(i)->FRect,
+											m_Transforms.at(i)->Rotation,
 											NULL, SDL_FLIP_NONE);
+				
+			}
+		}
+
+		void UpdatePhys(float deltaTime) {
+			for (int i = 0; i < m_Textures.size(); i++) {
+				m_Transforms.at(i)->UpdatePhys(deltaTime);
 			}
 		}
 	};

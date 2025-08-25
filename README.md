@@ -1,38 +1,38 @@
 
 Callable Functions 
 
-// Interfacing stuff
-extern "C" KOPY_API bool InitKOPY();
-extern "C" KOPY_API bool SetScriptPath(char* path);
-
-// Init() and Quit() commands for SDL
-extern "C" KOPY_API bool OpenKOPYWindow(int width, int height);
-extern "C" KOPY_API bool CloseKOPYWindow();
-
-// Sets the SDL_Renderer draw color
-extern "C" KOPY_API bool SetDrawColor(const int r, const int g, const int b, const int a);
-extern "C" KOPY_API bool SetScreenColor(const int r, const int g, const int b, const int a);
-
-// Draw Geometry Funcs
-extern "C" KOPY_API bool DrawLine(const float pt1_x, const float pt1_y, const float pt2_x, const float pt2_y);
-extern "C" KOPY_API bool DrawCircle(const int pt_x, const int pt_y, const int radius);
-extern "C" KOPY_API bool DrawFilledCircle(const int pt_x, const int pt_y, const int radius);
-extern "C" KOPY_API bool DrawRect(const int pt_x, const int pt_y, const int width, const int height, const int rotation);
-
-// Render calls
-extern "C" KOPY_API bool StartFrame();
-extern "C" KOPY_API bool RenderFrame();
-
-// Textures	
-extern "C" KOPY_API int LoadTexture(char* file_name);
-extern "C" KOPY_API bool ShowTexture(unsigned int index);
-extern "C" KOPY_API bool HideTexture(unsigned int index);
-extern "C" KOPY_API bool PlaceTexture(unsigned int index, float pointx, float pointy, float width, float height);
-extern "C" KOPY_API bool MoveTexture(unsigned int index, float pointx, float pointy);
-extern "C" KOPY_API bool RotateTexture(unsigned int index, float degrees);
-extern "C" KOPY_API bool PushTexture(unsigned int index, float push_x, float push_y);
-extern "C" KOPY_API bool SetVel(unsigned int index, KOPY::Vec2 vel);
-extern "C" KOPY_API bool SetRotVel(unsigned int index, float rotVel);
+// Interfacing stuff \n
+extern "C" KOPY_API bool InitKOPY(); \n 
+extern "C" KOPY_API bool SetScriptPath(char* path); \n
+\n
+// Init() and Quit() commands for SDL \n
+extern "C" KOPY_API bool OpenKOPYWindow(int width, int height); \n
+extern "C" KOPY_API bool CloseKOPYWindow(); \n
+\n
+// Sets the SDL_Renderer draw color \n
+extern "C" KOPY_API bool SetDrawColor(const int r, const int g, const int b, const int a); \n
+extern "C" KOPY_API bool SetScreenColor(const int r, const int g, const int b, const int a); \n
+\n
+// Draw Geometry Funcs \n
+extern "C" KOPY_API bool DrawLine(const float pt1_x, const float pt1_y, const float pt2_x, const float pt2_y); \n
+extern "C" KOPY_API bool DrawCircle(const int pt_x, const int pt_y, const int radius); \n
+extern "C" KOPY_API bool DrawFilledCircle(const int pt_x, const int pt_y, const int radius); \n
+extern "C" KOPY_API bool DrawRect(const int pt_x, const int pt_y, const int width, const int height, const int rotation); \n
+\n
+// Render calls \n
+extern "C" KOPY_API bool StartFrame(); \n
+extern "C" KOPY_API bool RenderFrame(); \n
+\n
+// Textures \n	
+int LoadTexture(char* file_name); \n
+bool ShowTexture(unsigned int index); \n
+bool HideTexture(unsigned int index); \n
+bool PlaceTexture(unsigned int index, float pointx, float pointy, float width, float height); \n
+bool MoveTexture(unsigned int index, float pointx, float pointy); \n
+bool RotateTexture(unsigned int index, float degrees); \n
+bool PushTexture(unsigned int index, float push_x, float push_y); \n
+bool SetVel(unsigned int index, KOPY::Vec2 vel); \n
+bool SetRotVel(unsigned int index, float rotVel); \n
 
 // Event handling
 extern "C" KOPY_API bool PollEvents();

@@ -66,6 +66,9 @@
     <ClInclude Include="event_enums.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="kopy_vec2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

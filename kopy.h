@@ -2,6 +2,8 @@
 
 #include "macros.h"
 #include "event_enums.h"
+#include "KO_Maths/maths.h"
+#include "kopy_vec2.h"
 
 #ifdef KOPY_EXPORTS
 #define KOPY_API __declspec(dllexport)
@@ -33,17 +35,22 @@ extern "C" KOPY_API bool RenderFrame();
 
 // Textures	
 extern "C" KOPY_API int LoadTexture(char* file_name);
-extern "C" KOPY_API bool PlaceTexture(int index, int pointx, int pointy, int width, int height);
-extern "C" KOPY_API bool MoveTexture(int index, int pointx, int pointy);
-extern "C" KOPY_API bool RotateTexture(int index, int degrees);
+extern "C" KOPY_API bool ShowTexture(unsigned int index);
+extern "C" KOPY_API bool HideTexture(unsigned int index);
+extern "C" KOPY_API bool PlaceTexture(unsigned int index, float pointx, float pointy, float width, float height);
+extern "C" KOPY_API bool MoveTexture(unsigned int index, float pointx, float pointy);
+extern "C" KOPY_API bool RotateTexture(unsigned int index, float degrees);
+extern "C" KOPY_API bool PushTexture(unsigned int index, float push_x, float push_y);
 
 // Event handling
 extern "C" KOPY_API bool PollEvents();
 extern "C" KOPY_API bool KeyPressed(unsigned int key);
 extern "C" KOPY_API bool WaitForKeypress(unsigned int key);
 
-// Testing passing a string
+// Testing
 extern "C" KOPY_API bool ImportString(char* buffer); // Must be 'ASCII' char* 
+extern "C" KOPY_API bool PassingVec2(KOPY::Vec2 vec);
+extern "C" KOPY_API KOPY::Vec2 ReturnVec2(KOPY::Vec2 vecIn);
 
 // Delays
 extern "C" KOPY_API bool DelayMS(int ms);

@@ -15,6 +15,7 @@ namespace KOPY {
 	private:
 		std::vector<SDL_Texture*> m_Textures;
 		std::vector<Transform> m_Transforms;
+		std::vector<bool> m_RenderFlags;
 		SDL_Renderer* m_Renderer;
 
 	public:
@@ -33,8 +34,7 @@ namespace KOPY {
 			}
 		}
 
-		bool SetRenderer(SDL_Renderer* renderer)
-		{
+		bool SetRenderer(SDL_Renderer* renderer) {
 			if (m_Renderer != nullptr) {
 				LOG("Renderer already assigned");
 				return false;
@@ -45,8 +45,7 @@ namespace KOPY {
 			}
 		}
 
-		int LoadTexture(const std::string& file_path) 
-		{
+		int LoadTexture(const std::string& file_path) {
 			if (m_Renderer == nullptr) {
 				LOG("Renderer not loaded to TextureHandler");
 				return -1;
@@ -68,13 +67,13 @@ namespace KOPY {
 			SDL_DestroySurface(_surface);
 			SDL_FRect frect = { 0, 0, _texture->w, _texture->h };
 			m_Transforms.emplace_back(Transform(frect));
+			m_RenderFlags.emplace_back(false);
 
 			LOG2("Texture Loaded from ", file_path);
 			return (int)(m_Textures.size()) - 1;
 		}
 
-		bool ResizeTexture(int index, float width, float height)
-		{
+		bool ResizeTexture(unsigned int index, float width, float height) {
 			if (index > m_Textures.size() - 1) {
 				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
 				return false;
@@ -83,8 +82,25 @@ namespace KOPY {
 			return true;
 		}
 
-		bool MoveTexture(int index, float pointx, float pointy)
-		{
+		bool ShowTexture(unsigned int index) {
+			if (index > m_Textures.size() - 1) {
+				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
+				return false;
+			}
+			m_RenderFlags.at(index) = true;
+			return true;
+		}
+
+		bool HideTexture(unsigned int index) {
+			if (index > m_Textures.size() - 1) {
+				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
+				return false;
+			}
+			m_RenderFlags.at(index) = false;
+			return true;
+		}
+
+		bool MoveTexture(unsigned int index, float pointx, float pointy) {
 			if (index > m_Textures.size() - 1) {
 				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
 				return false;
@@ -94,13 +110,20 @@ namespace KOPY {
 			return true;
 		}
 
-		bool RotateTexture(int index, float degrees)
-		{
+		bool PushTexture(unsigned int index, float push_x, float push_y) {
 			if (index > m_Textures.size() - 1) {
 				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
 				return false;
 			}
+			m_Transforms.at(index).FRect.x += push_x;
+			m_Transforms.at(index).FRect.y += push_y;
+		}
 
+		bool RotateTexture(unsigned int index, float degrees) {
+			if (index > m_Textures.size() - 1) {
+				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
+				return false;
+			}
 			m_Transforms.at(index).Rotation += degrees;
 			return true;
 		}

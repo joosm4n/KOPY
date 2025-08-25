@@ -10,7 +10,6 @@
 #include <SDL3/SDL.h>
 
 #include "kopy.h"
-#include "KO_Maths/maths.h"
 #include "texturehandler.h"
 #include "eventhandler.h"
 
@@ -32,6 +31,10 @@ static KOPY::EventHandler eHandler;
 // Filepaths
 static std::string SCRIPT_PATH;
 static const std::string ASSETS_PATH = "/bin/assets/";
+
+// Testing
+static maths::vec2 _vec = { 69, 420 };
+static KOPY::Vec2 _retVec;
 
 bool InitKOPY() {
     ERR_HANDLE(KOPYInitalized, "KOPY already initalized", return false);
@@ -79,8 +82,7 @@ bool OpenKOPYWindow(int width, int height) {
 
 bool CloseKOPYWindow() {
     ERR_HANDLE(!KOPYInitalized, "KOPY NOT INITALIZED", return false);
-    ERR_HANDLE(!SDLInitalized, "SDL NOT INITALIZED", return false);
-
+    ERR_SDLINIT;
     tHandler.~TextureHandler();
 
     if (_renderer != nullptr)
@@ -94,8 +96,7 @@ bool CloseKOPYWindow() {
 }
 
 bool SetDrawColor(const int r, const int g, const int b, const int a) {
-    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
-    
+    ERR_SDLINIT;
     SDL_Color clr = { r, g, b, a };
     if (SAME_CLR(DRAW_CLR, clr)) return true;
 
@@ -120,7 +121,7 @@ bool DrawLine(const float pt1_x, const float pt1_y, const float pt2_x, const flo
 
 bool DrawCircle(const int pt_x, const int pt_y, const int radius) {
 
-    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
+    ERR_SDLINIT;
     int numPts = radius * maths::KO_PI;
     float inc =  maths::KO_PI / numPts;
     int x, y;
@@ -138,7 +139,7 @@ bool DrawCircle(const int pt_x, const int pt_y, const int radius) {
 
 bool DrawFilledCircle(const int pt_x, const int pt_y, const int radius) 
 {
-    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
+    ERR_SDLINIT;
     int xMin = pt_x - radius;
     int xMax = pt_x + radius;
     int yMin = pt_y - radius;
@@ -162,14 +163,7 @@ bool DrawFilledCircle(const int pt_x, const int pt_y, const int radius)
 }
 
 bool DrawRect(const int pt_x, const int pt_y, const int width, const int height, const int rotation) {
-    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
-
-    LOG2(" x : ", pt_x);
-    LOG2(" y : ", pt_y);
-    LOG2(" w : ", width);
-    LOG2(" h : ", height);
-    LOG2(" r : ", rotation);
-
+    ERR_SDLINIT;
     SDL_FRect frect = { pt_x, pt_y, width, height };
     if (rotation == 0) {
         SDL_RenderRect(_renderer, &frect);
@@ -180,16 +174,6 @@ bool DrawRect(const int pt_x, const int pt_y, const int width, const int height,
     std::array<int, 8> pts;
     transform.GetRotatedRectPts(&pts);
 
-    LOG("Transformed Points :");
-    LOG2("0 : ", pts.at(0));
-    LOG2("1 : ", pts.at(1));
-    LOG2("2 : ", pts.at(2));
-    LOG2("3 : ", pts.at(3));
-    LOG2("4 : ", pts.at(4));
-    LOG2("5 : ", pts.at(5));
-    LOG2("6 : ", pts.at(6));
-    LOG2("7 : ", pts.at(7));
-
     SDL_RenderLine(_renderer, pts.at(0), pts.at(1), pts.at(2), pts.at(3));
     SDL_RenderLine(_renderer, pts.at(2), pts.at(3), pts.at(4), pts.at(5));
     SDL_RenderLine(_renderer, pts.at(4), pts.at(5), pts.at(6), pts.at(7));
@@ -198,7 +182,7 @@ bool DrawRect(const int pt_x, const int pt_y, const int width, const int height,
 }
 
 bool StartFrame() {
-    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
+    ERR_SDLINIT;
     bool success = true;
     success &= SDL_SetRenderDrawColor(_renderer, SCREEN_CLR.r, SCREEN_CLR.g, SCREEN_CLR.b, SCREEN_CLR.a);
     success &= SDL_RenderClear(_renderer);
@@ -206,33 +190,50 @@ bool StartFrame() {
 }
 
 bool RenderFrame() {
-    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
+    ERR_SDLINIT;
     tHandler.RenderAll();
     eHandler.EventPoll();
     return SDL_RenderPresent(_renderer);
 }
 
 int LoadTexture(char* file_name) {
+    ERR_SDLINIT;
     const std::string path_str = SCRIPT_PATH + ASSETS_PATH + file_name;
     LOG2("FilePath : ", path_str);
     return tHandler.LoadTexture(path_str);
 }
 
-bool PlaceTexture(int index, int pointx, int pointy, int width, int height) {
-    LOG2("Placing Texture : ", index);
+bool ShowTexture(unsigned int index) {
+    ERR_SDLINIT;
+    return tHandler.ShowTexture(index);
+}
+
+bool HideTexture(unsigned int index) {
+    ERR_SDLINIT;
+    return tHandler.HideTexture(index);
+}
+
+bool PlaceTexture(unsigned int index, float pointx, float pointy, float width, float height) {
+    ERR_SDLINIT;
     bool goodRet;
-    goodRet = tHandler.ResizeTexture(index, (float) width, (float) height);
-    goodRet &= tHandler.MoveTexture(index, (float) pointx, (float) pointy);
+    goodRet = tHandler.ResizeTexture(index, width, height);
+    goodRet &= tHandler.MoveTexture(index, pointx, pointy);
+    goodRet &= tHandler.ShowTexture(index);
     return goodRet;
 }
 
-bool MoveTexture(int index, int pointx, int pointy) {
-    ERR_HANDLE(!SDLInitalized, "SDL not initalized", return false);
-    return tHandler.MoveTexture(index, (float)pointx, (float)pointy);
+bool MoveTexture(unsigned int index, float pointx, float pointy) {
+    ERR_SDLINIT;
+    return tHandler.MoveTexture(index, pointx, pointy);
 }
 
-bool RotateTexture(int index, int degrees) {
-    ERR_HANDLE(!SDLInitalized, "SDL not initalized", return false);
+bool PushTexture(unsigned int index, float push_x, float push_y) {
+    ERR_SDLINIT;
+    return tHandler.PushTexture(index, push_x, push_y);
+}
+
+bool RotateTexture(unsigned int index, float degrees) {
+    ERR_SDLINIT;
     return tHandler.RotateTexture(index, degrees);
 }
 
@@ -240,25 +241,24 @@ bool ImportString(char* contents) {
     const std::string str_in = contents;
     LOG2("Imported String : ", contents);
     if (strcmp(str_in.c_str(), contents))
-        return true;    
+        return true;
     else
         return false;
 }
 
 bool PollEvents() {
-    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
+    ERR_SDLINIT;
     return eHandler.EventPoll();
 }
 
 bool KeyPressed(unsigned int key_in) {    
-    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
+    ERR_SDLINIT;
     KOPY::KO_KEY key = static_cast<KOPY::KO_KEY>(key_in);
     return eHandler.IsKeyPressed(key);
 }
 
 bool WaitForKeypress(unsigned int key_in) {
-    ERR_HANDLE(!SDLInitalized, "SDL not Initalized", return false);
-
+    ERR_SDLINIT;
     KOPY::KO_KEY key = static_cast<KOPY::KO_KEY>(key_in);
     size_t loop = 0;
     bool running = true;
@@ -274,13 +274,24 @@ bool WaitForKeypress(unsigned int key_in) {
 }
 
 bool DelayS(int s) {
-    ERR_HANDLE(!SDLInitalized, "SDL Not Initalized", return false);
+    ERR_SDLINIT;
     SDL_Delay(s * 1000);
     return true;
 }
 
 bool DelayMS(int ms) {
-    ERR_HANDLE(!SDLInitalized, "SDL Not Initalized", return false);
+    ERR_SDLINIT;
     SDL_Delay(ms);
     return true;
+}
+
+bool PassingVec2(KOPY::Vec2 vec) {
+    LOG(KOPY::KopyToMaths(vec));
+    return true;
+}
+
+KOPY::Vec2 ReturnVec2(KOPY::Vec2 vecIn) {
+    _vec = KOPY::KopyToMaths(vecIn);
+    LOG2("Sending : ", _vec);
+    return KOPY::MathsToKopy(_vec);
 }

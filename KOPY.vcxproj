@@ -170,6 +170,7 @@
     <ClInclude Include="event_enums.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="KO_Maths\enums.h" />
+    <ClInclude Include="kopy_vec2.h" />
     <ClInclude Include="KO_Maths\mat3.h" />
     <ClInclude Include="KO_Maths\mat4.h" />
     <ClInclude Include="KO_Maths\maths.h" />

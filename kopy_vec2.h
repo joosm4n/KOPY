@@ -9,6 +9,8 @@ namespace KOPY {
 		float y;
 	} Vec2;
 
+#define OLVec2(vec2) "vec2(" << vec2.x << ", " << vec2.y << ")"
+
 	inline Vec2 MathsToKopy(maths::vec2 mathVec) {
 		return { mathVec.x, mathVec.y };
 	}

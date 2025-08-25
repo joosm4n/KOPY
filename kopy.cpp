@@ -286,12 +286,11 @@ bool DelayMS(int ms) {
 }
 
 bool PassingVec2(KOPY::Vec2 vec) {
-    LOG(KOPY::KopyToMaths(vec));
+    LOG2("Recieved : ", OLVec2(vec));
     return true;
 }
 
 KOPY::Vec2 ReturnVec2(KOPY::Vec2 vecIn) {
-    _vec = KOPY::KopyToMaths(vecIn);
-    LOG2("Sending : ", _vec);
+    LOG2("Sending : ", OLVec2(vecIn));
     return KOPY::MathsToKopy(_vec);
 }

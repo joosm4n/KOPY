@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <array>
+#include "KO_Maths/maths_func.h"
 
 namespace KOPY {
 
@@ -34,8 +35,8 @@ namespace KOPY {
 			const float cx = FRect.x + halfW;
 			const float cy = FRect.y + halfH;
 			
-			float cos_t = cos(maths::toRadians(Rotation));
-			float sin_t = sin(maths::toRadians(Rotation));
+			float cos_t = std::cos(maths::toRadians(Rotation));
+			float sin_t = std::sin(maths::toRadians(Rotation));
 
 			int_array_out->at(0) = ((cx - FRect.x		 ) * cos_t - (cy - FRect.y		  ) * sin_t) + FRect.x;
 			int_array_out->at(1) = ((cx - FRect.x		 ) * sin_t + (cx - FRect.y		  ) * cos_t) + FRect.y;

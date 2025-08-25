@@ -2,7 +2,6 @@
 
 #include "macros.h"
 #include "event_enums.h"
-#include "KO_Maths/maths.h"
 #include "kopy_vec2.h"
 
 #ifdef KOPY_EXPORTS

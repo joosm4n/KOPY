@@ -26,12 +26,13 @@ namespace KOPY {
 	private:
 		bool CircleCircle(Transform& a, Transform& b, Collision& col) {
 
-			maths::vec2 diff = { b.FRect.x - a.FRect.x, b.FRect.y - a.FRect.y };
+			maths::vec2 diff = { a.FRect.x - b.FRect.x, a.FRect.y - b.FRect.y };
 			float len = length(diff);
 			float sumRadii = a.Radius() + b.Radius();
 			static const float epsilon = 1;
 
-			if (len < sumRadii + epsilon) {
+			if (len < sumRadii) {
+				LOG("Colliding");
 				col.depth = len - sumRadii;
 				col.normal = normalize(diff);
 				return true;
@@ -112,11 +113,11 @@ namespace KOPY {
 				objA.Velocity -= impulse / massA;
 				objB.Velocity += impulse / massB;
 
-				float rotA = objA.RotVel;
-				float rotB = objB.RotVel;
+				float rotA = objA.RotVel * massA / massB;
+				float rotB = objB.RotVel * massB / massA;
 
-				objA.RotVel += -rotB / massA;
-				objB.RotVel += -rotA / massB;
+				objA.RotVel += -rotB;
+				objB.RotVel += -rotA;
 			}
 			return true;
 		}

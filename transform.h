@@ -38,7 +38,7 @@ namespace KOPY {
 			FRect.y += vec.y;
 		}
 
-		inline Vec2 Centre() const {
+		inline maths::vec2 Centre() const {
 			return { FRect.x + (FRect.w / 2), FRect.y + (FRect.h / 2) };
 		}
 

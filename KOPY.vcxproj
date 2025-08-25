@@ -183,10 +183,12 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="kopy.h" />
     <ClInclude Include="texturehandler.h" />
+    <ClInclude Include="timer.h" />
     <ClInclude Include="transform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="timer.cpp" />
     <ClInclude Include="eventhandler.h" />
     <ClCompile Include="KO_Maths\mat3.cpp" />
     <ClCompile Include="KO_Maths\mat4.cpp" />

@@ -22,7 +22,7 @@ namespace KOPY {
 		SDL_Renderer* m_Renderer;
 
 	public:
-		bool m_DebugView = false;
+		bool m_DebugView = true;
 
 		TextureHandler()
 			: m_Renderer(nullptr)
@@ -142,8 +142,8 @@ namespace KOPY {
 			return true;
 		}
 
-		Vec2 GetCentre(unsigned int index) const {
-			ERR_INDEX(return MakeVec2(0, 0));
+		maths::vec2 GetCentre(unsigned int index) const {
+			ERR_INDEX(return maths::vec2(0, 0));
 			return m_Transforms.at(index)->Centre();
 		}
 
@@ -163,6 +163,26 @@ namespace KOPY {
 											m_Transforms.at(i)->Rotation,
 											NULL, SDL_FLIP_NONE);
 				
+				if (m_DebugView) {
+
+					SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
+
+					float radius = m_Transforms.at(i)->Radius();
+					maths::vec2 centre = m_Transforms.at(i)->Centre();
+
+					int numPts = radius  * maths::KO_PI;
+					float inc = maths::KO_PI / numPts;
+					int x, y;
+
+					for (float theta = 0; theta < maths::KO_PI; theta += inc) {
+						SDL_RenderPoint(m_Renderer, centre.x + (radius * cos(theta)),
+							centre.y + (radius * sin(theta)));
+
+						SDL_RenderPoint(m_Renderer, centre.x - (radius * cos(theta)),
+							centre.y - (radius * sin(theta)));
+					}
+				}
+					
 			}
 		}
 

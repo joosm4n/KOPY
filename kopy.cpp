@@ -10,6 +10,7 @@
 #include <SDL3/SDL.h>
 
 #include "kopy.h"
+#include "timer.h"
 #include "texturehandler.h"
 #include "eventhandler.h"
 #include "collisionhandler.h"
@@ -30,16 +31,21 @@ static KOPY::TextureHandler tHandler;
 static KOPY::EventHandler eHandler;
 static KOPY::CollisionHandler cHandler;
 
+// Timing
+static int _FPS = 60;
+static KOPY::Timer _timer(60);
+static float _deltaTime = 1.0f;
+
 // Filepaths
 static std::string SCRIPT_PATH;
-static std::string ASSETS_PATH = "/bin/assets/";
+static std::string ASSETS_PATH = "/assets/";
 
 // Testing
 static KOPY::Vec2 _retVec;
 static const char* _asteroidName = "Asteroid_small.png";
 static bool _DebugView = true;
 static int _ErrorCode = 0;
-static float _deltaTime = 1.0f;
+
 
 bool InitKOPY() {
     ERR_HANDLE(KOPYInitalized, "KOPY already initalized", return false);
@@ -191,6 +197,8 @@ bool DrawRect(const int pt_x, const int pt_y, const int width, const int height,
 
 bool StartFrame() {
     ERR_INITS;
+    _timer.SetStart();
+    _deltaTime = _timer.deltaTime();
     bool success = true;
     success &= SDL_SetRenderDrawColor(_renderer, SCREEN_CLR.r, SCREEN_CLR.g, SCREEN_CLR.b, SCREEN_CLR.a);
     success &= SDL_RenderClear(_renderer);
@@ -199,9 +207,12 @@ bool StartFrame() {
 
 bool RenderFrame() {
     ERR_INITS;
+    bool success = true;
     tHandler.RenderAll();
-    eHandler.EventPoll();
-    return SDL_RenderPresent(_renderer);
+    success &= eHandler.EventPoll();
+    success &= SDL_RenderPresent(_renderer);
+    _timer.FrameDelay();
+    return success;
 }
 
 int LoadTexture(char* file_name) {
@@ -340,12 +351,8 @@ int CreateAsteroid(KOPY::Vec2 pos, KOPY::Vec2 size) {
 bool UpdatePhysics() {
     ERR_INITS;
     bool result = true;
-    //LOG("Init");
     result &= cHandler.Detect(tHandler);
-    //LOG("Detected");
     result &= cHandler.Solve(_deltaTime);
-    //LOG("Solved");
     tHandler.UpdatePhys(_deltaTime);
-    //LOG("Updated");
     return result;
 }

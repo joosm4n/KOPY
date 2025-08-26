@@ -14,6 +14,7 @@
 #include "texturehandler.h"
 #include "eventhandler.h"
 #include "collisionhandler.h"
+#include "objecthandler.h"
 
 // Inits
 static bool KOPYInitalized = false;
@@ -30,6 +31,7 @@ static const SDL_Color NULL_CLR = { 255, 105, 180, 255 };
 static KOPY::TextureHandler tHandler;
 static KOPY::EventHandler eHandler;
 static KOPY::CollisionHandler cHandler;
+static KOPY::ObjectHandler objHandler;
 
 // Timing
 static int _FPS = 60;
@@ -43,6 +45,7 @@ static std::string ASSETS_PATH = "/assets/";
 // Testing
 static KOPY::Vec2 _retVec;
 static const char* _asteroidName = "Asteroid_small.png";
+static bool _astInit = false;
 static bool _DebugView = true;
 static int _ErrorCode = 0;
 
@@ -208,7 +211,7 @@ bool StartFrame() {
 bool RenderFrame() {
     ERR_INITS;
     bool success = true;
-    tHandler.RenderAll();
+    tHandler.RenderAll(objHandler);
     success &= eHandler.EventPoll();
     success &= SDL_RenderPresent(_renderer);
     _timer.FrameDelay();
@@ -218,52 +221,64 @@ bool RenderFrame() {
 int LoadTexture(char* file_name) {
     ERR_INITS;
     const std::string path_str = SCRIPT_PATH + ASSETS_PATH + file_name;
-    LOG2("FilePath : ", path_str);
     return tHandler.LoadTexture(path_str);
 }
 
-bool ShowTexture(unsigned int index) {
+int NewObjType(char* type_name, char* texture_path) {
     ERR_INITS;
-    return tHandler.ShowTexture(index);
+    const std::string texturePathStr = SCRIPT_PATH + ASSETS_PATH + texture_path;
+    unsigned int textureIndex = tHandler.LoadTexture(texturePathStr);
+    ERR_HANDLE(textureIndex < 0, "TextureIndex < 0, Unable to create new obj type", return -1);
+    return objHandler.NewType(type_name, textureIndex);
 }
 
-bool HideTexture(unsigned int index) {
+int AddObj(char* type_name, float _x, float _y, float width, float height) {
     ERR_INITS;
-    return tHandler.HideTexture(index);
+    return objHandler.AddObj(type_name, {_x, _y, width, height});
 }
 
-bool PlaceTexture(unsigned int index, float pointx, float pointy, float width, float height) {
+bool ShowTexture(unsigned int tformIndex) {
+    ERR_INITS;
+    return objHandler.ShowTexture(tformIndex);
+}
+
+bool HideTexture(unsigned int tformIndex) {
+    ERR_INITS;
+    return objHandler.HideTexture(tformIndex);
+}
+
+bool PlaceTexture(unsigned int tformIndex, float pointx, float pointy, float width, float height) {
     ERR_INITS;
     bool goodRet;
-    goodRet = tHandler.ResizeTexture(index, width, height);
-    goodRet &= tHandler.MoveTexture(index, pointx, pointy);
-    goodRet &= tHandler.ShowTexture(index);
+    goodRet = objHandler.ResizeTexture(tformIndex, width, height);
+    goodRet &= objHandler.MoveTexture(tformIndex, pointx, pointy);
+    goodRet &= objHandler.ShowTexture(tformIndex);
     return goodRet;
 }
 
 bool MoveTexture(unsigned int index, float pointx, float pointy) {
     ERR_INITS;
-    return tHandler.MoveTexture(index, pointx, pointy);
+    return objHandler.MoveTexture(index, pointx, pointy);
 }
 
 bool PushTexture(unsigned int index, float push_x, float push_y) {
     ERR_INITS;
-    return tHandler.PushTexture(index, push_x, push_y);
+    return objHandler.PushTexture(index, push_x, push_y);
 }
 
 bool RotateTexture(unsigned int index, float degrees) {
     ERR_INITS;
-    return tHandler.RotateTexture(index, degrees);
+    return objHandler.RotateTexture(index, degrees);
 }
 
 bool SetVel(unsigned int index, KOPY::Vec2 vel) {
     ERR_INITS;
-    return tHandler.SetVel(index, vel);
+    return objHandler.SetVel(index, vel);
 }
 
 bool SetRotVel(unsigned int index, float rotVel) {
     ERR_INITS;
-    return tHandler.SetRotVel(index, rotVel);
+    return objHandler.SetRotVel(index, rotVel);
 }
 
 bool ImportString(char* contents) {
@@ -329,30 +344,28 @@ KOPY::Vec2 ReturnVec2(KOPY::Vec2 vecIn) {
 
 int CreateAsteroid(KOPY::Vec2 pos, KOPY::Vec2 size) {
     ERR_INITS;
-    bool result = true;
-    const std::string path_str = SCRIPT_PATH + ASSETS_PATH + _asteroidName;
-    int index = tHandler.LoadTexture(path_str);
-    result &= tHandler.MoveTexture(index, pos.x, pos.y);
-    result &= tHandler.ResizeTexture(index, size.x, size.y);
-    result &= tHandler.ShowTexture(index);
-    result &= cHandler.AddCollider(index);
 
-    KOPY::Transform& tform = *tHandler.GetTransform(index);
-    LOG2("Asteroid Created at ", maths::vec2(tform.FRect.x, tform.FRect.y));
-
-    if (!result) {
-        return -1;
+    if (!_astInit) {
+        _astInit = true;
+        const std::string path_str = SCRIPT_PATH + ASSETS_PATH + _asteroidName;
+        unsigned int textureIndex = tHandler.LoadTexture(path_str);
+        objHandler.NewType("Asteroid", textureIndex);
+        unsigned int tformIndex = objHandler.AddObj(textureIndex, { pos.x, pos.y, size.x, size.y });
+        cHandler.AddCollider(tformIndex);
+        return tformIndex;
     }
     else {
-        return index;
+        unsigned int tformIndex =  objHandler.AddObj("Asteroid", { pos.x, pos.y, size.x, size.y });
+        cHandler.AddCollider(tformIndex);
+        return tformIndex;
     }
 }
 
 bool UpdatePhysics() {
     ERR_INITS;
     bool result = true;
-    result &= cHandler.Detect(tHandler);
+    result &= cHandler.Detect(objHandler);
     result &= cHandler.Solve(_deltaTime);
-    tHandler.UpdatePhys(_deltaTime);
+    objHandler.UpdatePhys(_deltaTime);
     return result;
 }

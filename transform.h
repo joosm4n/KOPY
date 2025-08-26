@@ -15,6 +15,7 @@ namespace KOPY {
 		float RotVel;
 		maths::vec2 Velocity;
 		SDL_FRect FRect;
+		bool RenderFlag;
 
 		Transform(const SDL_FRect& frect = { 0, 0, 0, 0 }, float rotation = 0)
 			: FRect(frect), Rotation(rotation), Velocity(0, 0), RotVel(0)
@@ -23,6 +24,12 @@ namespace KOPY {
 		Transform(int _x, int _y, int width, int height, float rotation = 0)
 			: Rotation(rotation), Velocity(0, 0), RotVel(0)
 		{ FRect = { (float)_x, (float)_y, (float)width, (float)height }; }
+
+		Transform(float _x, float _y, float width, float height, float rotation = 0)
+			: Rotation(rotation), Velocity(0, 0), RotVel(0)
+		{
+			FRect = { _x, _y, width, height };
+		}
 
 		inline void SetSize(float width, float height) {
 			FRect.w = width;

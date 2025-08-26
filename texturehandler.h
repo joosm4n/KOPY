@@ -8,6 +8,7 @@
 #include <string>
 #include "transform.h"
 #include <memory>
+#include "objecthandler.h"
 
 namespace KOPY {
 
@@ -17,8 +18,6 @@ namespace KOPY {
 	{
 	private:
 		std::vector<SDL_Texture*> m_Textures;
-		std::vector<std::shared_ptr<Transform>> m_Transforms;
-		std::vector<bool> m_RenderFlags;
 		SDL_Renderer* m_Renderer;
 
 	public:
@@ -56,7 +55,6 @@ namespace KOPY {
 			}
 
 			SDL_Surface* _surface = IMG_Load(file_path.data());
-			//SDL_Surface* _surface = SDL_LoadBMP("assets/test_bmp.bmp");
 			if (!_surface) {
 				LOG2("SDL_LoadBMP error : ", SDL_GetError());
 				return -1;
@@ -69,106 +67,34 @@ namespace KOPY {
 			}
 			m_Textures.emplace_back(_texture);
 			SDL_DestroySurface(_surface);
-			Transform tform(0, 0, _texture->w, _texture->h, 0);
-			m_Transforms.emplace_back(std::make_shared<Transform>(tform));
-			m_RenderFlags.emplace_back(false);
 
 			LOG2("Texture Loaded from ", file_path);
 			return (int)(m_Textures.size()) - 1;
 		}
 
-		inline bool GoodIndex(unsigned int index) const {
-			if (index > m_Textures.size() - 1)
-				return false;
-			else
-				return true;
+		inline bool ValidIndex(unsigned int index) const {
+			return (index < m_Textures.size());
 		}
 
-		bool ResizeTexture(unsigned int index, float width, float height) {
-			ERR_INDEX(return false);
-			m_Transforms.at(index)->SetSize(width, height);
-			return true;
-		}
+		void RenderAll(const ObjectHandler& objHandler) {
 
-		bool ShowTexture(unsigned int index) {
-			ERR_INDEX(return false);
-			m_RenderFlags.at(index) = true;
-			return true;
-		}
+			for (int tformIndex = 0; tformIndex < objHandler.NumTransforms(); tformIndex++) {
+				Transform& transform = *objHandler.GetTransform(tformIndex);
+				unsigned int textureIndex = objHandler.GetTextureIndex(tformIndex);
 
-		bool HideTexture(unsigned int index) {
-			if (index > m_Textures.size() - 1) {
-				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
-				return false;
-			}
-			m_RenderFlags.at(index) = false;
-			return true;
-		}
+				if (!transform.RenderFlag) continue;
 
-		bool MoveTexture(unsigned int index, float pointx, float pointy) {
-			if (index > m_Textures.size() - 1) {
-				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
-				return false;
-			}
-
-			m_Transforms.at(index)->SetPos(pointx, pointy);
-			return true;
-		}
-
-		bool PushTexture(unsigned int index, float push_x, float push_y) {
-			if (index > m_Textures.size() - 1) {
-				LOG2("Invalid texture index, must be <= ", m_Textures.size() - 1);
-				return false;
-			}
-			m_Transforms.at(index)->FRect.x += push_x;
-			m_Transforms.at(index)->FRect.y += push_y;
-		}
-
-		bool RotateTexture(unsigned int index, float degrees) {
-			ERR_INDEX(return false);
-			m_Transforms.at(index)->Rotation += degrees;
-			return true;
-		}
-
-		bool SetVel(unsigned int index, KOPY::Vec2 vel) {
-			ERR_INDEX(return false);
-			m_Transforms.at(index)->Velocity = KopyToMaths(vel);
-			return true;
-		}
-
-		bool SetRotVel(unsigned int index, float rotVel) {
-			ERR_INDEX(return false);
-			m_Transforms.at(index)->RotVel = rotVel;
-			return true;
-		}
-
-		maths::vec2 GetCentre(unsigned int index) const {
-			ERR_INDEX(return maths::vec2(0, 0));
-			return m_Transforms.at(index)->Centre();
-		}
-
-		float GetRadius(unsigned int index) const {
-			ERR_INDEX(return -1);
-			return m_Transforms.at(index)->Radius();
-		}
-
-		std::shared_ptr<Transform> GetTransform(unsigned int index) {
-			return m_Transforms.at(index);
-		}
-
-		void RenderAll() {
-			for (int i = 0; i < m_Textures.size(); i++) {
-				SDL_RenderTextureRotated(m_Renderer, m_Textures.at(i), NULL,
-											&m_Transforms.at(i)->FRect,
-											m_Transforms.at(i)->Rotation,
+				SDL_RenderTextureRotated(m_Renderer, m_Textures.at(textureIndex), NULL,
+											&transform.FRect,
+											transform.Rotation,
 											NULL, SDL_FLIP_NONE);
 				
 				if (m_DebugView) {
 
 					SDL_SetRenderDrawColor(m_Renderer, 255, 255, 255, 255);
 
-					float radius = m_Transforms.at(i)->Radius();
-					maths::vec2 centre = m_Transforms.at(i)->Centre();
+					float radius = transform.Radius();
+					maths::vec2 centre = transform.Centre();
 
 					int numPts = radius  * maths::KO_PI;
 					float inc = maths::KO_PI / numPts;
@@ -186,11 +112,6 @@ namespace KOPY {
 			}
 		}
 
-		void UpdatePhys(float deltaTime) {
-			for (int i = 0; i < m_Textures.size(); i++) {
-				m_Transforms.at(i)->UpdatePhys(deltaTime);
-			}
-		}
 	};
 
 }

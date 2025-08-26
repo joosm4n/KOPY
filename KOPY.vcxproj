@@ -180,6 +180,7 @@
     <ClInclude Include="KO_Maths\vec3.h" />
     <ClInclude Include="KO_Maths\vec4.h" />
     <ClInclude Include="macros.h" />
+    <ClInclude Include="objecthandler.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="kopy.h" />
     <ClInclude Include="texturehandler.h" />

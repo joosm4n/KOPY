@@ -2,7 +2,7 @@
 
 #include "KO_Maths/maths.h"
 #include <vector>
-#include "texturehandler.h"
+#include "objecthandler.h"
 
 namespace KOPY {
 
@@ -20,20 +20,21 @@ namespace KOPY {
 	class CollisionHandler
 	{
 	private:
-		std::vector<unsigned int> m_Indices;
+		std::vector<unsigned int> m_TformIndices;
 		std::vector<Collision> m_Collisions;
 
 	private:
 		bool CircleCircle(Transform& a, Transform& b, Collision& col) {
 
-			maths::vec2 diff = { a.FRect.x - b.FRect.x, a.FRect.y - b.FRect.y };
-			float len = length(diff);
+			maths::vec2 diff = a.Centre() - b.Centre();
+			float dist = length(diff);
 			float sumRadii = a.Radius() + b.Radius();
 			static const float epsilon = 1;
 
-			if (len < sumRadii) {
+			if (dist < sumRadii + epsilon) {
 				LOG("Colliding");
-				col.depth = len - sumRadii;
+				col.depth = abs(sumRadii - dist);
+				LOG2("Depth : ", col.depth);
 				col.normal = normalize(diff);
 				return true;
 			}
@@ -45,40 +46,40 @@ namespace KOPY {
 
 		CollisionHandler() { }
 
-		bool AddCollider(unsigned int index) {
-			m_Indices.emplace_back(index);
+		bool AddCollider(unsigned int tformIndex) {
+			m_TformIndices.emplace_back(tformIndex);
 			return true;
 		}
 		
-		bool RemoveColldier(unsigned int index) {
-			for (unsigned int i = 0; i < m_Indices.size(); i++) {
-				if (index == m_Indices.at(i)) {
-					m_Indices.erase(m_Indices.begin() + (i + 1));
+		bool RemoveColldier(unsigned int tformIndex) {
+			for (unsigned int i = 0; i < m_TformIndices.size(); i++) {
+				if (tformIndex == m_TformIndices.at(i)) {
+					m_TformIndices.erase(m_TformIndices.begin() + (i + 1));
 					return true;
 				}
 			}
 			return false;
 		}
 
-		bool Detect(TextureHandler& tHandler) {
+		bool Detect(ObjectHandler& objHandler) {
 
 			m_Collisions.clear();
 
 			Collision col;
-			for (size_t i = 0; i < m_Indices.size(); i++) {
+			for (size_t i = 0; i < m_TformIndices.size(); i++) {
 				//LOG2("i : ", i);
-				if (!tHandler.GoodIndex(i)) continue;
-				Transform& ObjA = *tHandler.GetTransform(m_Indices.at(i));
+				if (!objHandler.ValidIndex(i)) continue;
+				Transform& ObjA = *objHandler.GetTransform(m_TformIndices.at(i));
 
-				for (size_t j = i + 1; j < m_Indices.size(); j++) {
+				for (size_t j = i + 1; j < m_TformIndices.size(); j++) {
 					//LOG2("j : ", j);
-					if (!tHandler.GoodIndex(j)) continue;
-					Transform& ObjB = *tHandler.GetTransform(m_Indices.at(j));
+					if (!objHandler.ValidIndex(j)) continue;
+					Transform& ObjB = *objHandler.GetTransform(m_TformIndices.at(j));
 
 					if (CircleCircle(ObjA, ObjB, col)) {
 						//LOG("Colliding");
-						col.objA = tHandler.GetTransform(m_Indices.at(i));
-						col.objB = tHandler.GetTransform(m_Indices.at(j));
+						col.objA = objHandler.GetTransform(m_TformIndices.at(i));
+						col.objB = objHandler.GetTransform(m_TformIndices.at(j));
 						m_Collisions.emplace_back(col);
 						continue;
 					}

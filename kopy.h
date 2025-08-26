@@ -43,6 +43,10 @@ extern "C" KOPY_API bool PushTexture(unsigned int index, float push_x, float pus
 extern "C" KOPY_API bool SetVel(unsigned int index, KOPY::Vec2 vel);
 extern "C" KOPY_API bool SetRotVel(unsigned int index, float rotVel);
 
+// Dynamic Object loading
+extern "C" KOPY_API int NewObjType(char* type_name, char* texture_path);
+extern "C" KOPY_API int AddObj(char* type_name, float _x, float _y, float width, float height);
+
 // Event handling
 extern "C" KOPY_API bool PollEvents();
 extern "C" KOPY_API bool KeyPressed(unsigned int key);

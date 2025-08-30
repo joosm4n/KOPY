@@ -369,3 +369,8 @@ bool UpdatePhysics() {
     objHandler.UpdatePhys(_deltaTime);
     return result;
 }
+
+bool AddCollider(unsigned int tformIndex) {
+    ERR_INITS;
+    return cHandler.AddCollider(tformIndex);
+}

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "KO_Maths/maths.h"
+#include <KO_Maths/maths.h>
 #include <vector>
 #include "objecthandler.h"
 
@@ -32,9 +32,9 @@ namespace KOPY {
 			static const float epsilon = 1;
 
 			if (dist < sumRadii + epsilon) {
-				LOG("Colliding");
+				//LOG("Colliding");
 				col.depth = abs(sumRadii - dist);
-				LOG2("Depth : ", col.depth);
+				//LOG2("Depth : ", col.depth);
 				col.normal = normalize(diff);
 				return true;
 			}

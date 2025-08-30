@@ -64,3 +64,4 @@ extern "C" KOPY_API bool DelayS(int s);
 // Game Stuff
 extern "C" KOPY_API int CreateAsteroid(KOPY::Vec2 pos, KOPY::Vec2 size);
 extern "C" KOPY_API bool UpdatePhysics();
+extern "C" KOPY_API bool AddCollider(unsigned int tformIndex);

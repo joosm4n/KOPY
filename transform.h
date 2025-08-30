@@ -2,7 +2,7 @@
 
 #include <cmath>
 #include <array>
-#include "KO_Maths/maths_func.h"
+#include <KO_Maths/maths_func.h>
 
 namespace KOPY {
 

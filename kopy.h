@@ -44,8 +44,8 @@ extern "C" KOPY_API bool SetVel(unsigned int index, KOPY::Vec2 vel);
 extern "C" KOPY_API bool SetRotVel(unsigned int index, float rotVel);
 
 // Dynamic Object loading
-extern "C" KOPY_API int NewObjType(char* type_name, char* texture_path);
-extern "C" KOPY_API int AddObj(char* type_name, float _x, float _y, float width, float height);
+extern "C" KOPY_API int NewObjType(const char* type_name, const char* texture_path);
+extern "C" KOPY_API int AddObj(const char* type_name, float _x, float _y, float width, float height);
 
 // Event handling
 extern "C" KOPY_API bool PollEvents();
@@ -53,7 +53,7 @@ extern "C" KOPY_API bool KeyPressed(unsigned int key);
 extern "C" KOPY_API bool WaitForKeypress(unsigned int key);
 
 // Testing
-extern "C" KOPY_API bool ImportString(char* buffer); // Must be 'ASCII' char* 
+extern "C" KOPY_API bool ImportString(const char* buffer); // Must be 'ASCII' char* 
 extern "C" KOPY_API bool PassingVec2(KOPY::Vec2 vec);
 extern "C" KOPY_API KOPY::Vec2 ReturnVec2(KOPY::Vec2 vecIn);
 
@@ -65,3 +65,4 @@ extern "C" KOPY_API bool DelayS(int s);
 extern "C" KOPY_API int CreateAsteroid(KOPY::Vec2 pos, KOPY::Vec2 size);
 extern "C" KOPY_API bool UpdatePhysics();
 extern "C" KOPY_API bool AddCollider(unsigned int tformIndex);
+extern "C" KOPY_API bool AddText(const char* content, float x, float y);

@@ -15,6 +15,7 @@
 #include "eventhandler.h"
 #include "collisionhandler.h"
 #include "objecthandler.h"
+#include "ui/texthandler.h"
 
 // Inits
 static bool KOPYInitalized = false;
@@ -32,6 +33,7 @@ static KOPY::TextureHandler tHandler;
 static KOPY::EventHandler eHandler;
 static KOPY::CollisionHandler cHandler;
 static KOPY::ObjectHandler objHandler;
+static KOPY::TextHandler txtHandler;
 
 // Timing
 static int _FPS = 60;
@@ -57,11 +59,11 @@ bool InitKOPY() {
     return true;
 }
 
-bool SetScriptPath(char* path) {
+bool SetScriptPath(const char* path) {
     SCRIPT_PATH = path;
     return true;
 }
-bool SetAssetsPath(char* path) {
+bool SetAssetsPath(const char* path) {
     ASSETS_PATH = path;
     return true;
 }
@@ -92,6 +94,17 @@ bool OpenKOPYWindow(int width, int height) {
         LOG(" TextureHandler.SetRenderer() error ");
         return false;
     }
+
+    if (!TTF_Init()) {
+        LOG2("TTF_Init error : ", SDL_GetError());
+        txtHandler.m_Initalized = false;
+    }
+    else {
+        txtHandler.m_Initalized = true;
+        txtHandler.CreateTextEngine(_renderer);
+        LOG("TTF Initalized");
+    }
+
     KOPYInitalized = true;
     SDLInitalized = true;
     StartFrame();
@@ -109,6 +122,7 @@ bool CloseKOPYWindow() {
     if (_window != nullptr)
         SDL_DestroyWindow(_window);
 
+    TTF_Quit();
     SDL_Quit();
     return true;
 }
@@ -212,19 +226,22 @@ bool RenderFrame() {
     ERR_INITS;
     bool success = true;
     tHandler.RenderAll(objHandler);
+    txtHandler.RenderAll();
     success &= eHandler.EventPoll();
     success &= SDL_RenderPresent(_renderer);
     _timer.FrameDelay();
+    std::string title = "FPS : " + std::to_string(_timer.GetFPS());
+    SDL_SetWindowTitle(_window, title.c_str());
     return success;
 }
 
-int LoadTexture(char* file_name) {
+int LoadTexture(const char* file_name) {
     ERR_INITS;
     const std::string path_str = SCRIPT_PATH + ASSETS_PATH + file_name;
     return tHandler.LoadTexture(path_str);
 }
 
-int NewObjType(char* type_name, char* texture_path) {
+int NewObjType(const char* type_name, const char* texture_path) {
     ERR_INITS;
     const std::string texturePathStr = SCRIPT_PATH + ASSETS_PATH + texture_path;
     unsigned int textureIndex = tHandler.LoadTexture(texturePathStr);
@@ -232,7 +249,7 @@ int NewObjType(char* type_name, char* texture_path) {
     return objHandler.NewType(type_name, textureIndex);
 }
 
-int AddObj(char* type_name, float _x, float _y, float width, float height) {
+int AddObj(const char* type_name, float _x, float _y, float width, float height) {
     ERR_INITS;
     return objHandler.AddObj(type_name, {_x, _y, width, height});
 }
@@ -297,13 +314,13 @@ bool PollEvents() {
 
 bool KeyPressed(unsigned int key_in) {    
     ERR_INITS;
-    KOPY::KO_KEY key = static_cast<KOPY::KO_KEY>(key_in);
+    KOPY::KOPY_KEY key = static_cast<KOPY::KOPY_KEY>(key_in);
     return eHandler.IsKeyPressed(key);
 }
 
 bool WaitForKeypress(unsigned int key_in) {
     ERR_INITS;
-    KOPY::KO_KEY key = static_cast<KOPY::KO_KEY>(key_in);
+    KOPY::KOPY_KEY key = static_cast<KOPY::KOPY_KEY>(key_in);
     size_t loop = 0;
     bool running = true;
     while (running) {
@@ -373,4 +390,11 @@ bool UpdatePhysics() {
 bool AddCollider(unsigned int tformIndex) {
     ERR_INITS;
     return cHandler.AddCollider(tformIndex);
+}
+
+bool AddText(const char* content, float x, float y) {
+    ERR_INITS;
+    const std::string str = content;
+    int idx = txtHandler.AddText(str, {x, y});
+    return true;
 }

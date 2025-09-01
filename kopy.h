@@ -12,7 +12,8 @@
 
 // Interfacing stuff
 extern "C" KOPY_API bool InitKOPY();
-extern "C" KOPY_API bool SetScriptPath(char* path);
+extern "C" KOPY_API bool SetScriptPath(const char* path);
+extern "C" KOPY_API bool SetAssetsPath(const char* path);
 
 // Init() and Quit() commands for SDL
 extern "C" KOPY_API bool OpenKOPYWindow(int width, int height);

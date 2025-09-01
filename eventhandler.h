@@ -19,7 +19,7 @@ namespace KOPY {
 			m_CheckResults.fill(false);
 		}
 
-		bool IsKeyPressed(KO_KEY key) {
+		bool IsKeyPressed(KOPY_KEY key) {
 			ERR_HANDLE(!m_Intialized, "EventHandler not intialized", return false);
 			return m_CheckResults.at(key);
 		}
@@ -45,7 +45,7 @@ namespace KOPY {
 	private:
 
 		void CheckQueue(SDL_Keycode event_key) {
-			KO_KEY index = GetIndex((SDLK)event_key);
+			KOPY_KEY index = GetIndex((SDLK)event_key);
 			m_CheckResults.at(index) = true;
 			return;
 		}

@@ -77,8 +77,8 @@ namespace KOPY {
 		}
 
 		void RenderAll(const ObjectHandler& objHandler) {
-
 			for (int tformIndex = 0; tformIndex < objHandler.NumTransforms(); tformIndex++) {
+				ERR_HANDLE(m_Textures.size() == 0, "No textures loaded, cannot render.", return);
 				Transform& transform = *objHandler.GetTransform(tformIndex);
 				unsigned int textureIndex = objHandler.GetTextureIndex(tformIndex);
 

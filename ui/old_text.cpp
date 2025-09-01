@@ -16,12 +16,9 @@ namespace KOPY {
 			m_WordsPerLine[i] = 0;
 		}
 
-		if (renderer != nullptr) {
-			m_TextEngine = TTF_CreateRendererTextEngine(renderer);
-		}
-
 		m_PtSize = 24;
-		m_Font = TTF_OpenFont(FONT_PATH, m_PtSize);
+		//m_Font = TTF_OpenFont(FONT_PATH, m_PtSize);
+		m_Text = nullptr;
 		m_Color = { 0, 0, 0, 255 };
 		m_RenderFlag = false;
 		m_IsContentNum = false;
@@ -38,10 +35,12 @@ namespace KOPY {
 
 	Text::~Text()
 	{
-		SDL_DestroyTexture(m_TextBoxTexture);
-		TTF_CloseFont(m_Font);
+		if (m_TextBoxTexture != nullptr) {
+			SDL_DestroyTexture(m_TextBoxTexture);
+		}
+		//TTF_CloseFont(m_Font);
 		TTF_DestroyText(m_Text);
-		TTF_DestroyRendererTextEngine(m_TextEngine);
+		//TTF_DestroyRendererTextEngine(m_TextEngine);
 	}
 
 	void Text::AddRenderer(SDL_Renderer* renderer) 
@@ -53,9 +52,13 @@ namespace KOPY {
 	{
 		m_IsContentNum = false;
 		m_DisplayContent = content;
-		m_Content.clear();
-		m_Content.push_back(content);
-		TTF_SetTextString(m_Text, m_DisplayContent.c_str(), m_DisplayContent.size());
+		if (m_Text != nullptr) {
+			TTF_SetTextString(m_Text, m_DisplayContent.c_str(), m_DisplayContent.size());
+		}
+		else {
+			LOG("Content Set");
+			m_Text = TTF_CreateText(m_TextEngine, m_Font, m_DisplayContent.c_str(), m_DisplayContent.size());
+		}
 	}
 
 	void Text::SetPos(float x, float y)
@@ -189,11 +192,12 @@ namespace KOPY {
 
 	}
 
-	void Text::Render(SDL_Renderer*& renderer)
+	void Text::Render(SDL_Renderer* renderer)
 	{
 		if (m_RenderFlag)
 		{
 			Update();
+			/*
 			if (m_HasTextbox)
 			{
 				if (m_TBHasTexture)
@@ -206,6 +210,7 @@ namespace KOPY {
 					SDL_RenderFillRect(renderer, &m_TextBoxFrect);
 				}
 			}
+			*/
 			SDL_SetRenderDrawColor(renderer, m_Color.r, m_Color.g, m_Color.b, m_Color.a );
 			TTF_DrawRendererText(m_Text, (int)m_Xpos, (int)m_Ypos);
 		}

@@ -43,6 +43,7 @@ static float _deltaTime = 1.0f;
 // Filepaths
 static std::string SCRIPT_PATH;
 static std::string ASSETS_PATH = "/assets/";
+static std::string FONTS_PATH = ASSETS_PATH + "fonts/";
 
 // Testing
 static KOPY::Vec2 _retVec;
@@ -65,6 +66,7 @@ bool SetScriptPath(const char* path) {
 }
 bool SetAssetsPath(const char* path) {
     ASSETS_PATH = path;
+    FONTS_PATH = ASSETS_PATH + "fonts/";
     return true;
 }
 
@@ -102,6 +104,7 @@ bool OpenKOPYWindow(int width, int height) {
     else {
         txtHandler.m_Initalized = true;
         txtHandler.CreateTextEngine(_renderer);
+        txtHandler.UseFont((SCRIPT_PATH + FONTS_PATH + "test_font.ttf").c_str());
         LOG("TTF Initalized");
     }
 
@@ -114,7 +117,6 @@ bool OpenKOPYWindow(int width, int height) {
 bool CloseKOPYWindow() {
     ERR_HANDLE(!KOPYInitalized, "KOPY NOT INITALIZED", return false);
     ERR_SDLINIT;
-    tHandler.~TextureHandler();
 
     if (_renderer != nullptr)
         SDL_DestroyRenderer(_renderer);

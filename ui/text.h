@@ -1,92 +1,60 @@
 #pragma once
 
-#include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include <vector>
 #include <string>
 #include <KO_Maths/maths.h>
 
-constexpr Uint8 MAX_LINES = 63;
-constexpr const char* FONT_PATH = "assets/fonts/test_font.ttf";
-
 namespace KOPY {
 
-	class Text
+	class Text 
 	{
-	private:
-		TTF_Text* m_Text;
-		TTF_Font* m_Font; // Make font index
+	public:
+		std::string m_Content;
+		maths::vec2 m_Pos;
 		SDL_Color m_Color;
-		float m_PtSize;
 
-		TTF_TextEngine* m_TextEngine;
+		TTF_Text* m_Text;
 		bool m_RenderFlag;
 
-		std::vector<std::string> m_Content;
-		int m_LineCount;
-		Uint8 m_WordsPerLine[MAX_LINES];
+		Text() {
+			m_Content = "";
+			m_Pos = { 0, 0 };
+			m_Text = nullptr;
+			m_RenderFlag = true;
+			m_Color = { 0, 0, 0, 255 };
+		}
 
-		int* m_ContentNum;
-		bool m_IsContentNum;
-		std::string m_ContentPrefix;
+		~Text() {
+			TTF_DestroyText(m_Text);
+		}
 
-		std::string m_DisplayContent;
-		int m_DisplayedLine;
-		float m_DispWidth;
-		float m_DispHeight;
+		void SetContent(const std::string& content) {
+			m_Content = content;
+			TTF_SetTextString(m_Text, content.c_str(), content.size());
+		}
+	
+		void SetPos(const maths::vec2& pos) {
+			m_Pos = pos;
+		}
 
-		float m_Xpos;
-		float m_Ypos;
+		void SetColor(const SDL_Color& color) {
+			m_Color = color;
+			TTF_SetTextColor(m_Text, color.r, color.g, color.b, color.a);
+		}
 
-		SDL_Texture* m_TextBoxTexture;
-		SDL_FRect m_TextBoxFrect;
-		SDL_Color m_TextBoxColor;
-		int m_TBoxBorder;
-		bool m_HasTextbox;
-		bool m_TBHasTexture;
+		void Print() const {
+			LOG2("m_Content : ", m_Content);
+			LOG2("m_Pos : ", m_Pos);
+			LOG2("m_RenderFlag : ", m_RenderFlag);
+		}
 
-	public:
-		Text(SDL_Renderer* renderer = nullptr);
-		~Text();
-
-		void AddRenderer(SDL_Renderer* renderer);
-		void SetContent(const std::string& content);
-
-#if NO_CURRENT_USAGE
-		void SetContentNum(int& var, const std::string prefix);
-		void SetContentFile(const char* path);
-
-		void SetTextBox(SDL_Renderer*& renderer, const char* texture_file);
-		void SetTextBox(const SDL_Color* color);
-
-		void DisplayLine(const int line);
-		void NextLine();
-#endif NO_CURRENT_USAGE
-
-		void SetPos(float x, float y);
-		void SetPos(maths::vec2 position);
-		void SetShow(bool show) { m_RenderFlag = show; };
-		void SetColor(SDL_Color color);
-
-		void Update();
-
-		SDL_Color* GetColor() { return &m_Color; };
-#if NO_CURRENT_USAGE
-		SDL_Color* GetTBColor() { return &m_TextBoxColor; };
-		SDL_FRect* GetTBFrect() { return &m_TextBoxFrect; };
-		bool HasTextbox() const { return m_HasTextbox; };
-		int GetLineNum() const { return m_DisplayedLine; };
-#endif NO_CURRENT_USAGE
-		bool IsShowing() const { return m_RenderFlag; };
-
-		void Render(SDL_Renderer*& renderer);
-
-	private:
-		void UpdateFrect() {
-			m_TextBoxFrect = { m_Xpos - m_TBoxBorder, m_Ypos - m_TBoxBorder,
-							  m_DispWidth + 2 * m_TBoxBorder, m_DispHeight + 2 * m_TBoxBorder };
+		void Render() const {
+			if (m_Text != nullptr) {
+				TTF_DrawRendererText(m_Text, m_Pos.x, m_Pos.y);
+			}
+			else {
+				LOG("Cannot render text as m_Text is uninitalized");
+			}
 		}
 	};
-
-	
 }

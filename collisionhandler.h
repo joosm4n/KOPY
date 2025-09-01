@@ -32,14 +32,25 @@ namespace KOPY {
 			static const float epsilon = 1;
 
 			if (dist < sumRadii + epsilon) {
-				//LOG("Colliding");
 				col.depth = abs(sumRadii - dist);
-				//LOG2("Depth : ", col.depth);
 				col.normal = normalize(diff);
 				return true;
 			}
-			else
+			else 
 				return false;
+		}
+
+		bool BoundingBoxCheck(const Transform& a, const Transform& b) {
+
+			// Area
+			bool horiMiss = (a.Centre().x + a.Radius() < b.Centre().x - b.Radius()) && (a.Centre().x - a.Radius() > b.Centre().x + b.Radius());
+			bool vertMiss = (a.Centre().y + a.Radius() < b.Centre().y - b.Radius()) && (a.Centre().y - a.Radius() > b.Centre().y + b.Radius());
+			if (horiMiss && vertMiss) {
+				return false;
+			}
+			else {
+				return true;
+			}
 		}
 
 	public:
@@ -64,20 +75,20 @@ namespace KOPY {
 		bool Detect(ObjectHandler& objHandler) {
 
 			m_Collisions.clear();
-
+			Uint32 loop = 0;
 			Collision col;
 			for (size_t i = 0; i < m_TformIndices.size(); i++) {
-				//LOG2("i : ", i);
 				if (!objHandler.ValidIndex(i)) continue;
 				Transform& ObjA = *objHandler.GetTransform(m_TformIndices.at(i));
 
 				for (size_t j = i + 1; j < m_TformIndices.size(); j++) {
-					//LOG2("j : ", j);
+					loop++;
 					if (!objHandler.ValidIndex(j)) continue;
 					Transform& ObjB = *objHandler.GetTransform(m_TformIndices.at(j));
 
+					if (BoundingBoxCheck(ObjA, ObjB) == false) continue;
+
 					if (CircleCircle(ObjA, ObjB, col)) {
-						//LOG("Colliding");
 						col.objA = objHandler.GetTransform(m_TformIndices.at(i));
 						col.objB = objHandler.GetTransform(m_TformIndices.at(j));
 						m_Collisions.emplace_back(col);
@@ -85,6 +96,8 @@ namespace KOPY {
 					}
 				}
 			}
+			//LOG2("Num col checks : ", loop);
+			//LOG2("Num collisions : ", m_Collisions.size());
 			return true;
 		}
 

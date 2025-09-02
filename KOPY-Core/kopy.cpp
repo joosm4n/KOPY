@@ -394,9 +394,27 @@ bool AddCollider(unsigned int tformIndex) {
     return cHandler.AddCollider(tformIndex);
 }
 
-bool AddText(const char* content, float x, float y) {
+int AddText(const char* content, float x, float y) {
     ERR_INITS;
     const std::string str = content;
-    int idx = txtHandler.AddText(str, {x, y});
-    return true;
+    return txtHandler.AddText(str, {x, y});
+}
+
+bool ResizeText(unsigned int textIndex, unsigned int size) {
+    ERR_INITS;
+    return txtHandler.Resize(textIndex, size);
+}
+
+bool SetTextPos(unsigned int textIndex, KOPY::Vec2 pos) {
+    ERR_INITS;
+    return txtHandler.SetPos(textIndex, KOPY::KopyToMaths(pos));
+}
+
+bool SetTextColorRGBA(unsigned int textIndex, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+    ERR_INITS;
+    return txtHandler.SetColor(textIndex, r, g, b, a);
+}
+bool SetTextColorKOPY(unsigned int textIndex, KOPY_Color clr) {
+    ERR_INITS;
+    return txtHandler.SetColor(textIndex, clr.r, clr.g, clr.b, clr.a);
 }

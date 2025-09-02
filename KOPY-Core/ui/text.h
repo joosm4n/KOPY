@@ -2,7 +2,7 @@
 
 #include <SDL3_ttf/SDL_ttf.h>
 #include <string>
-#include <KO_Maths/maths.h>
+#include "KO_Maths/maths.h"
 
 namespace KOPY {
 
@@ -40,6 +40,10 @@ namespace KOPY {
 		void SetColor(const SDL_Color& color) {
 			m_Color = color;
 			TTF_SetTextColor(m_Text, color.r, color.g, color.b, color.a);
+		}
+
+		TTF_Text* GetText() const {
+			return m_Text;
 		}
 
 		void Print() const {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <KO_Maths/vec2.h>
+#include "KO_Maths/vec2.h"
 
 namespace KOPY {
 

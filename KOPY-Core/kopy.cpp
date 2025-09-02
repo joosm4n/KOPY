@@ -418,3 +418,8 @@ bool SetTextColorKOPY(unsigned int textIndex, KOPY_Color clr) {
     ERR_INITS;
     return txtHandler.SetColor(textIndex, clr.r, clr.g, clr.b, clr.a);
 }
+
+bool SetTextContent(unsigned int textIndex, const char* content) {
+    ERR_INITS;
+    return txtHandler.SetContent(textIndex, content);
+}

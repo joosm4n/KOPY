@@ -96,6 +96,11 @@ namespace KOPY {
 			m_TextObjs.at(index).SetColor({ r, g, b, a });
 		}
 
+		bool SetContent(unsigned int index, const char* content) {
+			ERR_HANDLE(index > m_ObjCount - 1, "Invalid text index in SetColor()", return false);
+			m_TextObjs.at(index).SetContent(content);
+		}	
+
 		void RenderAll() {
 			for (unsigned int i = 0; i < m_ObjCount; i++) {
 				m_TextObjs.at(i).Render();

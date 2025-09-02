@@ -56,6 +56,7 @@ extern "C" KOPY_API bool ResizeText(unsigned int textIndex, unsigned int size);
 extern "C" KOPY_API bool SetTextColorRGBA(unsigned int textIndex, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
 extern "C" KOPY_API bool SetTextColorKOPY(unsigned int textIndex, KOPY_Color clr);
 extern "C" KOPY_API bool SetTextPos(unsigned int textIndex, KOPY::Vec2 pos);
+extern "C" KOPY_API bool SetTextContent(unsigned int textIndex, const char* content);
 
 // Event handling
 extern "C" KOPY_API bool PollEvents();

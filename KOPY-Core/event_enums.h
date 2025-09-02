@@ -3,6 +3,16 @@
 namespace KOPY {
 
 	constexpr unsigned int NUM_KEYS = 256;
+	constexpr unsigned int NUM_MOUSE_BUTTONS = 6;
+
+	enum KOPY_MOUSE_BUTTON {
+		MOUSE_NONE	   = 0,
+		MOUSE_LEFT     = 1,
+		MOUSE_MIDDLE   = 2,
+		MOUSE_RIGHT    = 3,
+		MOUSE_X1       = 4,
+		MOUSE_X2       = 5
+	};
 
 	enum KOPY_KEY {
 		 UNKNOWN           

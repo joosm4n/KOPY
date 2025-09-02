@@ -295,6 +295,11 @@ bool SetVel(unsigned int index, KOPY::Vec2 vel) {
     return objHandler.SetVel(index, vel);
 }
 
+bool AddVel(unsigned int index, KOPY::Vec2 vel) {
+    ERR_INITS;
+    return objHandler.AddVel(index, vel);
+}
+
 bool SetRotVel(unsigned int index, float rotVel) {
     ERR_INITS;
     return objHandler.SetRotVel(index, rotVel);
@@ -324,7 +329,7 @@ bool WaitForKeypress(unsigned int key_in) {
     ERR_INITS;
     KOPY::KOPY_KEY key = static_cast<KOPY::KOPY_KEY>(key_in);
     size_t loop = 0;
-    bool running = true;
+    bool running = true;    
     while (running) {
         eHandler.EventPoll();
         running = !eHandler.IsKeyPressed(key);
@@ -333,6 +338,26 @@ bool WaitForKeypress(unsigned int key_in) {
         if (loop > 100000) return false;
     }
     return true;
+}
+
+int GetMouseX() {
+    ERR_INITS;
+    return eHandler.GetMouseX();
+}
+
+int GetMouseY() { 
+    ERR_INITS;
+    return eHandler.GetMouseY();
+}
+
+KOPY::Vec2 GetMousePos() {
+    ERR_INITS;
+    return eHandler.GetMousePos();
+}
+
+bool MouseButtonPressed(KOPY::KOPY_MOUSE_BUTTON button) {
+    ERR_INITS;
+    return eHandler.MouseButtonPressed(button);
 }
 
 bool DelayS(int s) {
@@ -359,7 +384,6 @@ KOPY::Vec2 ReturnVec2(KOPY::Vec2 vecIn) {
 }
 
 
-//------- Testing Asteroids -----------//
 
 int CreateAsteroid(KOPY::Vec2 pos, KOPY::Vec2 size) {
     ERR_INITS;
@@ -423,3 +447,4 @@ bool SetTextContent(unsigned int textIndex, const char* content) {
     ERR_INITS;
     return txtHandler.SetContent(textIndex, content);
 }
+

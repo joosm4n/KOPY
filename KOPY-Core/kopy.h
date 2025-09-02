@@ -44,6 +44,7 @@ extern "C" KOPY_API bool MoveTexture(unsigned int index, float pointx, float poi
 extern "C" KOPY_API bool RotateTexture(unsigned int index, float degrees);
 extern "C" KOPY_API bool PushTexture(unsigned int index, float push_x, float push_y);
 extern "C" KOPY_API bool SetVel(unsigned int index, KOPY::Vec2 vel);
+extern "C" KOPY_API bool AddVel(unsigned int index, KOPY::Vec2 vel);
 extern "C" KOPY_API bool SetRotVel(unsigned int index, float rotVel);
 
 // Dynamic Object loading
@@ -62,6 +63,10 @@ extern "C" KOPY_API bool SetTextContent(unsigned int textIndex, const char* cont
 extern "C" KOPY_API bool PollEvents();
 extern "C" KOPY_API bool KeyPressed(unsigned int key);
 extern "C" KOPY_API bool WaitForKeypress(unsigned int key);
+extern "C" KOPY_API int GetMouseX();
+extern "C" KOPY_API int GetMouseY();
+extern "C" KOPY_API KOPY::Vec2 GetMousePos();
+extern "C" KOPY_API bool MouseButtonPressed(KOPY::KOPY_MOUSE_BUTTON button);
 
 // Testing
 extern "C" KOPY_API bool ImportString(const char* buffer); // Must be 'ASCII' char* 

@@ -139,6 +139,12 @@ namespace KOPY {
 			return true;
 		}
 
+		bool AddVel(unsigned int tformIndex, KOPY::Vec2 vel) {
+			ERR_HANDLE(!ValidIndex(tformIndex), "Invalid AddVel() transform index", return false;)
+			m_Transforms.at(tformIndex)->Velocity += KopyToMaths(vel);
+			return true;
+		}
+
 		bool SetRotVel(unsigned int tformIndex, float rotVel) {
 			ERR_HANDLE(!ValidIndex(tformIndex), "Invalid SetRotVel() transform index", return false;)
 			m_Transforms.at(tformIndex)->RotVel = rotVel;

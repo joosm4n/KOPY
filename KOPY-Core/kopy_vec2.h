@@ -4,10 +4,26 @@
 
 namespace KOPY {
 
-	typedef struct {
+	struct Vec2 {
 		float x;
 		float y;
-	} Vec2;
+
+		Vec2(float _x = 0, float _y = 0)
+			: x(_x), y(_y)
+		{ }
+
+		Vec2(bool a)
+		{
+			if (a) {
+				x = 1;
+				y = 1;
+			}
+			else {
+				x = 0;
+				y = 0;
+			}
+		}
+	};
 
 #define OLVec2(vec2) "vec2(" << vec2.x << ", " << vec2.y << ")"
 

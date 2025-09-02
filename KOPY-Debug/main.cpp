@@ -33,11 +33,7 @@ int main() {
 		StartFrame();
 		PollEvents();
 
-		if (loop % 10 == 0) {
-			ResizeText(txt1, 40);
-		} else if ((loop + 3) % 10 == 0) {
-			ResizeText(txt1, 24);
-		}
+		SetTextPos(txt2, GetMousePos());
 
 		if (KeyPressed(KOPY_KEY::ESCAPE)) {
 			running = false;

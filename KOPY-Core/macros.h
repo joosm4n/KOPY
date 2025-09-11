@@ -26,3 +26,4 @@
 #define DEFAULT_SCREEN_HEIGHT 1080
 
 #define SAME_CLR(x, y) ((x.r == y.r) && (x.g == y.g) && (x.b == y.b) && (x.a == y.a))
+#define FLOAT_MAX 

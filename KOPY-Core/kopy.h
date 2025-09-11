@@ -46,6 +46,8 @@ extern "C" KOPY_API bool PushTexture(unsigned int index, float push_x, float pus
 extern "C" KOPY_API bool SetVel(unsigned int index, KOPY::Vec2 vel);
 extern "C" KOPY_API bool AddVel(unsigned int index, KOPY::Vec2 vel);
 extern "C" KOPY_API bool SetRotVel(unsigned int index, float rotVel);
+extern "C" KOPY_API bool SetMaxVel(unsigned int index, float maxVel);
+extern "C" KOPY_API bool SetMaxAcel(unsigned int index, float maxAcel);
 
 // Dynamic Object loading
 extern "C" KOPY_API int NewObjType(const char* type_name, const char* texture_path);

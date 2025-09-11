@@ -1,5 +1,6 @@
 #pragma once
 
+#include "objparam.h"
 #include <vector>
 #include <memory>
 #include <map>
@@ -13,6 +14,8 @@ namespace KOPY {
 	{
 	private:
 		std::vector<std::shared_ptr<Transform>> m_Transforms;
+		std::vector<ObjParam> m_ObjParams;
+
 		std::vector<unsigned int> m_TextureIndex;
 		std::map<std::string, unsigned int> m_TypeMap; // type name >> texture index
 
@@ -36,6 +39,7 @@ namespace KOPY {
 			}
 
 			m_Transforms.emplace_back(std::make_shared<Transform>(tform));
+			m_ObjParams.emplace_back(ObjParam());
 			return m_Transforms.size() - 1;
 		}
 
@@ -43,8 +47,9 @@ namespace KOPY {
 			auto itr = m_TypeMap.begin();
 			for (auto itr = m_TypeMap.begin(); itr != m_TypeMap.end(); ++itr) {
 				if (itr->second == textureIndex) {
-					m_TextureIndex.push_back(textureIndex);
-					m_Transforms.push_back(std::make_shared<Transform>(tform));
+					m_TextureIndex.emplace_back(textureIndex);
+					m_Transforms.emplace_back(std::make_shared<Transform>(tform));
+					m_ObjParams.emplace_back(ObjParam());
 					break;
 				}
 			}
@@ -135,7 +140,12 @@ namespace KOPY {
 
 		bool SetVel(unsigned int tformIndex, KOPY::Vec2 vel) {
 			ERR_HANDLE(!ValidIndex(tformIndex), "Invalid SetVel() transform index", return false;)
-			m_Transforms.at(tformIndex)->Velocity = KopyToMaths(vel);
+
+			maths::vec2& objVel = m_Transforms.at(tformIndex)->Velocity;
+			float& maxVel = m_ObjParams.at(tformIndex).max_vel;
+
+			abs(vel.x) > maxVel ? objVel.x = maxVel : objVel.x = vel.x;
+			abs(vel.y) > maxVel ? objVel.y = maxVel : objVel.y = vel.y;
 			return true;
 		}
 
@@ -148,6 +158,18 @@ namespace KOPY {
 		bool SetRotVel(unsigned int tformIndex, float rotVel) {
 			ERR_HANDLE(!ValidIndex(tformIndex), "Invalid SetRotVel() transform index", return false;)
 			m_Transforms.at(tformIndex)->RotVel = rotVel;
+			return true;
+		}
+
+		bool SetMaxVel(unsigned int tformIndex, float maxVel) {
+			ERR_HANDLE(!ValidIndex(tformIndex), "Invalid SetMaxVel() transform index", return false;)
+			m_ObjParams.at(tformIndex).max_vel = maxVel;
+			return true;
+		}
+
+		bool SetMaxAcel(unsigned int tformIndex, float maxAcel) {
+			ERR_HANDLE(!ValidIndex(tformIndex), "Invalid SetMaxAcel() transform index", return false;)
+			m_ObjParams.at(tformIndex).max_acel = maxAcel;
 			return true;
 		}
 

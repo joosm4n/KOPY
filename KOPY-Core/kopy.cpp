@@ -305,6 +305,16 @@ bool SetRotVel(unsigned int index, float rotVel) {
     return objHandler.SetRotVel(index, rotVel);
 }
 
+bool SetMaxVel(unsigned int index, float maxVel) {
+    ERR_INITS;
+    return objHandler.SetMaxVel(index, maxVel);
+}
+
+bool SetMaxAcel(unsigned int index, float maxAcel) {
+    ERR_INITS;
+    return objHandler.SetMaxAcel(index, maxAcel);
+}
+
 bool ImportString(char* contents) {
     const std::string str_in = contents;
     LOG2("Imported String : ", contents);

@@ -17,6 +17,7 @@
 #include "objecthandler.h"
 #include "ui/texthandler.h"
 
+
 // Inits
 static bool KOPYInitalized = false;
 static bool SDLInitalized = false;
@@ -46,12 +47,11 @@ static std::string ASSETS_PATH = "/assets/";
 static std::string FONTS_PATH = ASSETS_PATH + "fonts/";
 
 // Testing
-static KOPY::Vec2 _retVec;
+static KOPY::Vec2 _retVec(2, 6);
 static const char* _asteroidName = "Asteroid_small.png";
 static bool _astInit = false;
 static bool _DebugView = true;
 static int _ErrorCode = 0;
-
 
 bool InitKOPY() {
     ERR_HANDLE(KOPYInitalized, "KOPY already initalized", return false);
@@ -67,6 +67,10 @@ bool SetScriptPath(const char* path) {
 bool SetAssetsPath(const char* path) {
     ASSETS_PATH = path;
     FONTS_PATH = ASSETS_PATH + "fonts/";
+    return true;
+}
+bool SetDebugView(bool state) {
+    _DebugView = state;
     return true;
 }
 
@@ -216,6 +220,7 @@ bool DrawRect(const int pt_x, const int pt_y, const int width, const int height,
 
 bool StartFrame() {
     ERR_INITS;
+    tHandler.m_DebugView = _DebugView;
     _timer.SetStart();
     _deltaTime = _timer.deltaTime();
     bool success = true;
@@ -246,7 +251,7 @@ int LoadTexture(const char* file_name) {
 int NewObjType(const char* type_name, const char* texture_path) {
     ERR_INITS;
     const std::string texturePathStr = SCRIPT_PATH + ASSETS_PATH + texture_path;
-    unsigned int textureIndex = tHandler.LoadTexture(texturePathStr);
+    idx_t textureIndex = tHandler.LoadTexture(texturePathStr);
     ERR_HANDLE(textureIndex < 0, "TextureIndex < 0, Unable to create new obj type", return -1);
     return objHandler.NewType(type_name, textureIndex);
 }
@@ -256,17 +261,17 @@ int AddObj(const char* type_name, float _x, float _y, float width, float height)
     return objHandler.AddObj(type_name, {_x, _y, width, height});
 }
 
-bool ShowTexture(unsigned int tformIndex) {
+bool ShowTexture(idx_t tformIndex) {
     ERR_INITS;
     return objHandler.ShowTexture(tformIndex);
 }
 
-bool HideTexture(unsigned int tformIndex) {
+bool HideTexture(idx_t tformIndex) {
     ERR_INITS;
     return objHandler.HideTexture(tformIndex);
 }
 
-bool PlaceTexture(unsigned int tformIndex, float pointx, float pointy, float width, float height) {
+bool PlaceTexture(idx_t tformIndex, float pointx, float pointy, float width, float height) {
     ERR_INITS;
     bool goodRet;
     goodRet = objHandler.ResizeTexture(tformIndex, width, height);
@@ -275,42 +280,42 @@ bool PlaceTexture(unsigned int tformIndex, float pointx, float pointy, float wid
     return goodRet;
 }
 
-bool MoveTexture(unsigned int index, float pointx, float pointy) {
+bool MoveTexture(idx_t index, float pointx, float pointy) {
     ERR_INITS;
     return objHandler.MoveTexture(index, pointx, pointy);
 }
 
-bool PushTexture(unsigned int index, float push_x, float push_y) {
+bool PushTexture(idx_t index, float push_x, float push_y) {
     ERR_INITS;
     return objHandler.PushTexture(index, push_x, push_y);
 }
 
-bool RotateTexture(unsigned int index, float degrees) {
+bool RotateTexture(idx_t index, float degrees) {
     ERR_INITS;
     return objHandler.RotateTexture(index, degrees);
 }
 
-bool SetVel(unsigned int index, KOPY::Vec2 vel) {
+bool SetVel(idx_t index, KOPY::Vec2 vel) {
     ERR_INITS;
     return objHandler.SetVel(index, vel);
 }
 
-bool AddVel(unsigned int index, KOPY::Vec2 vel) {
+bool AddVel(idx_t index, KOPY::Vec2 vel) {
     ERR_INITS;
     return objHandler.AddVel(index, vel);
 }
 
-bool SetRotVel(unsigned int index, float rotVel) {
+bool SetRotVel(idx_t index, float rotVel) {
     ERR_INITS;
     return objHandler.SetRotVel(index, rotVel);
 }
 
-bool SetMaxVel(unsigned int index, float maxVel) {
+bool SetMaxVel(idx_t index, float maxVel) {
     ERR_INITS;
     return objHandler.SetMaxVel(index, maxVel);
 }
 
-bool SetMaxAcel(unsigned int index, float maxAcel) {
+bool SetMaxAcel(idx_t index, float maxAcel) {
     ERR_INITS;
     return objHandler.SetMaxAcel(index, maxAcel);
 }
@@ -329,15 +334,13 @@ bool PollEvents() {
     return eHandler.EventPoll();
 }
 
-bool KeyPressed(unsigned int key_in) {    
+bool KeyPressed(KOPY::KOPY_KEY key) {
     ERR_INITS;
-    KOPY::KOPY_KEY key = static_cast<KOPY::KOPY_KEY>(key_in);
     return eHandler.IsKeyPressed(key);
 }
 
-bool WaitForKeypress(unsigned int key_in) {
+bool WaitForKeypress(KOPY::KOPY_KEY key) {
     ERR_INITS;
-    KOPY::KOPY_KEY key = static_cast<KOPY::KOPY_KEY>(key_in);
     size_t loop = 0;
     bool running = true;    
     while (running) {
@@ -387,13 +390,9 @@ bool PassingVec2(KOPY::Vec2 vec) {
     return true;
 }
 
-KOPY::Vec2 ReturnVec2(KOPY::Vec2 vecIn) {
-    LOG2("Sending : ", OLVec2(vecIn));
-    _retVec = vecIn;
+KOPY::Vec2 ReturnVec2() {
     return _retVec;
 }
-
-
 
 int CreateAsteroid(KOPY::Vec2 pos, KOPY::Vec2 size) {
     ERR_INITS;
@@ -401,14 +400,14 @@ int CreateAsteroid(KOPY::Vec2 pos, KOPY::Vec2 size) {
     if (!_astInit) {
         _astInit = true;
         const std::string path_str = SCRIPT_PATH + ASSETS_PATH + _asteroidName;
-        unsigned int textureIndex = tHandler.LoadTexture(path_str);
+        idx_t textureIndex = tHandler.LoadTexture(path_str);
         objHandler.NewType("Asteroid", textureIndex);
-        unsigned int tformIndex = objHandler.AddObj(textureIndex, { pos.x, pos.y, size.x, size.y });
+        idx_t tformIndex = objHandler.AddObj(textureIndex, { pos.x, pos.y, size.x, size.y });
         cHandler.AddCollider(tformIndex);
         return tformIndex;
     }
     else {
-        unsigned int tformIndex =  objHandler.AddObj("Asteroid", { pos.x, pos.y, size.x, size.y });
+        idx_t tformIndex =  objHandler.AddObj("Asteroid", { pos.x, pos.y, size.x, size.y });
         cHandler.AddCollider(tformIndex);
         return tformIndex;
     }
@@ -423,7 +422,7 @@ bool UpdatePhysics() {
     return result;
 }
 
-bool AddCollider(unsigned int tformIndex) {
+bool AddCollider(idx_t tformIndex) {
     ERR_INITS;
     return cHandler.AddCollider(tformIndex);
 }
@@ -434,26 +433,26 @@ int AddText(const char* content, float x, float y) {
     return txtHandler.AddText(str, {x, y});
 }
 
-bool ResizeText(unsigned int textIndex, unsigned int size) {
+bool ResizeText(idx_t textIndex, unsigned int size) {
     ERR_INITS;
     return txtHandler.Resize(textIndex, size);
 }
 
-bool SetTextPos(unsigned int textIndex, KOPY::Vec2 pos) {
+bool SetTextPos(idx_t textIndex, KOPY::Vec2 pos) {
     ERR_INITS;
     return txtHandler.SetPos(textIndex, KOPY::KopyToMaths(pos));
 }
 
-bool SetTextColorRGBA(unsigned int textIndex, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+bool SetTextColorRGBA(idx_t textIndex, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
     ERR_INITS;
     return txtHandler.SetColor(textIndex, r, g, b, a);
 }
-bool SetTextColorKOPY(unsigned int textIndex, KOPY_Color clr) {
+bool SetTextColorKOPY(idx_t textIndex, KOPY_Color clr) {
     ERR_INITS;
     return txtHandler.SetColor(textIndex, clr.r, clr.g, clr.b, clr.a);
 }
 
-bool SetTextContent(unsigned int textIndex, const char* content) {
+bool SetTextContent(idx_t textIndex, const char* content) {
     ERR_INITS;
     return txtHandler.SetContent(textIndex, content);
 }

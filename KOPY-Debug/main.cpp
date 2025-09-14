@@ -12,8 +12,9 @@ int main() {
 
 	LOG("KOPY-Debug.exe Starting");
 	using namespace KOPY;
-	SetScriptPath("C:/Users/Pengu/Documents/IdiotEngineers/KOPY/Cpp Files/");
+	SetScriptPath("C:/Users/Kieran/source/repos/KOPY/Cpp Files/");
 	SetAssetsPath("assets/");
+	SetDebugView(false);
 	InitKOPY();
 	OpenKOPYWindow(WIDTH, HEIGHT);
 	

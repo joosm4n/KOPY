@@ -13,11 +13,17 @@ namespace maths {
 		y = 0.0f;
 		z = 0.0f;
 	}
-	vec3::vec3(const float& x, const float& y, const float& z)
+	vec3::vec3(float _x, float _y, float _z)
 	{
-		this->x = x;
-		this->y = y;
-		this->z = z;
+		this->x = _x;
+		this->y = _y;
+		this->z = _z;
+	}
+	vec3::vec3(const vec2& vec, float _z)
+	{
+		this->x = vec.x;
+		this->y = vec.y;
+		this->z = _z;
 	}
 
 	vec3& vec3::add(const vec3& other)
@@ -47,6 +53,11 @@ namespace maths {
 		y /= other.y;
 		z /= other.z;
 		return*this;
+	}
+
+	vec3 operator-(vec3 self)
+	{
+		return { -self.x, -self.y, -self.z };
 	}
 
 	vec3 operator+(vec3 left, const vec3& right)
@@ -126,20 +137,58 @@ namespace maths {
 		stream << "vec3: (" << vector.x << ", " << vector.y << ", " << vector.z << ")";
 		return stream;
 	}
-
-	double length (const vec3 vector)
+	float& vec3::operator[](size_t index)
 	{
-		return std::sqrt(vector.x * vector.x + vector.y * vector.y);
+		switch (index)
+		{
+		case 0:
+			return this->x;
+		case 1:
+			return this->y;
+		case 2:
+			return this->z;
+		default:
+			std::cerr << "Invalid vec3() index" << std::endl;
+			return 0.0f;
+		}
+	}
+	const float& vec3::operator[](size_t index) const
+	{
+		switch (index)
+		{
+		case 0:
+			return this->x;
+		case 1:
+			return this->y;
+		case 2:
+			return this->z;
+		default:
+			std::cerr << "Invalid vec3() index" << std::endl;
+			return 0.0f;
+		}
+	}
+
+	float length (const vec3 vector)
+	{
+		return std::sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
 	}
 	vec3 normalize(const vec3& vector)
 	{
-		double len = length(vector);
+		float len = length(vector);
 		if ( len == 0) return vec3(0, 0, 0);
 		return vec3(vector.x / len, vector.y / len, vector.z / len);
 	}
 	float dot(const vec3& left, const vec3& right)
 	{
 		return (left.x * right.x) + (left.y * right.y) + (left.z * right.z);
+	}
+	vec3& crossProduct(const vec3& left, const vec3& right)
+	{
+		vec3 result;
+		result.x = (left.y * right.z) - (left.z * right.y);
+		result.y = (left.z * right.x) - (left.x * right.z);
+		result.z = (left.x * right.y) - (left.y * right.z);
+		return result;
 	}
 
 	vec3 vec3::xaxis(const float amount)
@@ -158,8 +207,8 @@ namespace maths {
 	vec3& vec3::rotateAroundX(const vec3& axis, const float angle)
 	{
 		vec3 relative = *this - axis;
-		mat3 rotMat = mat3::xRotation(angle);
-		vec3 rotated = MAT3_MULT(rotMat, relative);
+		mat3 rotmat = mat3::xRotation(angle);
+		vec3 rotated = MAT3_MULT(rotmat, relative);
 		*this = rotated + axis;
 		return *this;
 	}

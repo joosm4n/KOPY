@@ -8,13 +8,14 @@
 namespace maths {
 
 	constexpr double KO_PI = M_PI;
-	constexpr double KO_TWOPI = 2 * KO_PI;
-
+	constexpr double KO_TWOPI = 2.0f * KO_PI;
+	constexpr double KO_DEG2RAD_CONST = M_PI / 180.0f;
+	constexpr double KO_RAD2DEG_CONST = 180.0f / M_PI;
 
 	inline float toRadians(float degrees)
-	{
-		return degrees * (M_PI / 180.0f);
-	}
+		{ return degrees * KO_DEG2RAD_CONST; }
+	inline float toDegrees(float radians)
+		{ return radians * KO_RAD2DEG_CONST; }
 
 	inline  float EdgeFunc(const vec2& a, const vec2& b, const vec2& c)
 		{ return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x); }

@@ -5,7 +5,7 @@
 
 namespace maths {
 
-	struct mat4
+	__declspec(align(4)) struct mat4
 	{
 		union
 		{
@@ -21,6 +21,8 @@ namespace maths {
 		mat4& multiply(const mat4& other);
 		friend mat4 operator*(mat4  left, const mat4& right);
 		mat4& operator*=(const mat4& other);
+		friend vec4 operator*(const mat4& matrix, const vec4& vector);
+		friend vec4 operator*(const vec4& vector, const mat4& matrix);
 
 		static mat4 orthographic(float left, float right, float bottom, float top, float near, float far);
 		static mat4 perspective(float fov, float aspectRatio, float near, float far);
@@ -31,5 +33,8 @@ namespace maths {
 	
 		friend std::ostream& operator<<(std::ostream&, const mat4& matrix);
 
+		
 	};
+
+	mat4 inverse(const mat4& m);
 }

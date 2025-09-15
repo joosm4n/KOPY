@@ -45,6 +45,11 @@ namespace maths {
 		return*this;
 	}
 
+	vec2 operator-(const vec2& self)
+	{
+		return {-self.x, -self.y};
+	}
+
 	vec2& operator+(vec2 left, const vec2& right)
 	{
 		return left.add(right);
@@ -109,6 +114,19 @@ namespace maths {
 	{
 		stream << "vec2: (" << vector.x << ", " << vector.y << ")";
 		return stream;
+	}
+	float& operator[](size_t index)
+	{
+		switch (index)
+		{
+		case 0:
+			return this->x;
+		case 1:
+			return this->y;
+		default:
+			std::cerr << "Invalid vec3() index" << std::endl;
+			return 0.0f;
+		}
 	}
 
 	double length(const vec2 vector)

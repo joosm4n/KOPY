@@ -138,6 +138,8 @@
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -160,6 +162,8 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -183,6 +187,7 @@
     <ClInclude Include="KO_Maths\mat4.h" />
     <ClInclude Include="KO_Maths\maths.h" />
     <ClInclude Include="KO_Maths\maths_func.h" />
+    <ClInclude Include="KO_Maths\quat.h" />
     <ClInclude Include="KO_Maths\vec2.h" />
     <ClInclude Include="KO_Maths\vec3.h" />
     <ClInclude Include="KO_Maths\vec4.h" />
@@ -200,6 +205,7 @@
     <ClCompile Include="KO_Maths\mat3.cpp" />
     <ClCompile Include="KO_Maths\mat4.cpp" />
     <ClCompile Include="KO_Maths\maths_func.cpp" />
+    <ClCompile Include="KO_Maths\quat.cpp" />
     <ClCompile Include="KO_Maths\vec2.cpp" />
     <ClCompile Include="KO_Maths\vec3.cpp" />
     <ClCompile Include="KO_Maths\vec4.cpp" />

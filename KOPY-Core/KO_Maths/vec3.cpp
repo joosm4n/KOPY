@@ -2,10 +2,11 @@
 #include "vec3.h"
 #include "mat3.h"
 #include <cmath>
-#include <cassert>
 #include "vec2.h"
 
 namespace maths {
+
+	static float NULL_FLOAT = 0.0f;
 
 	vec3::vec3()
 	{
@@ -149,7 +150,7 @@ namespace maths {
 			return this->z;
 		default:
 			std::cerr << "Invalid vec3() index" << std::endl;
-			return 0.0f;
+			return NULL_FLOAT;
 		}
 	}
 	const float& vec3::operator[](size_t index) const

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include "vec2.h"
 
 namespace maths {
 

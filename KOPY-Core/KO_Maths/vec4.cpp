@@ -23,7 +23,7 @@ namespace maths {
 
 	vec4 operator-(const vec4& self)
 	{
-		return {-self.x,-self.y,-self.z,-self.w,}
+		return { -self.x,-self.y,-self.z,-self.w, };
 	}
 
 	vec4& vec4::add(const vec4& other)
@@ -106,11 +106,11 @@ namespace maths {
 		return !(*this == other);
 	}
 
-	vec4& operator*(vec4 self, float scalar)
+	vec4 operator*(const vec4& self, float scalar)
 	{
 		return { self.x * scalar, self.y * scalar, self.z * scalar, self.w * scalar };
 	}
-	vec4& operator*(float scalar, vec4 self) 
+	vec4 operator*(float scalar, const vec4& self) 
 	{
 		return self * scalar;
 	}

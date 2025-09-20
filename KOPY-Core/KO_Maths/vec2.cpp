@@ -3,6 +3,8 @@
 
 namespace maths {
 
+	static float NULL_FLOAT = 0.0f;
+
 	vec2::vec2()
 		: x(0), y(0)
 	{
@@ -115,7 +117,7 @@ namespace maths {
 		stream << "vec2: (" << vector.x << ", " << vector.y << ")";
 		return stream;
 	}
-	float& operator[](size_t index)
+	float& vec2::operator[](size_t index)
 	{
 		switch (index)
 		{
@@ -125,7 +127,7 @@ namespace maths {
 			return this->y;
 		default:
 			std::cerr << "Invalid vec3() index" << std::endl;
-			return 0.0f;
+			return NULL_FLOAT;
 		}
 	}
 
